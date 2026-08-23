@@ -104,12 +104,13 @@ io.on('connection', (socket) => {
 // Each route file handles a specific feature area
 const authRoutes = require('./routes/auth.routes');
 const incidentRoutes = require('./routes/incident.routes');
-const runbookRoutes = require('./routes/runbook.routes'); // [NEW] Module 4
+const runbookRoutes = require('./routes/runbook.routes');
+const analyticsRoutes = require('./routes/analytics.routes'); // [NEW] Module 6
 
-// Register routes with a base path prefix
 app.use('/api/auth', authRoutes);
 app.use('/api/incidents', incidentRoutes);
-app.use('/api/runbooks', runbookRoutes); // [NEW] Module 4
+app.use('/api/runbooks', runbookRoutes);
+app.use('/api/analytics', analyticsRoutes); // [NEW] Module 6
 
 // Test route - visit http://localhost:5000/api/health to verify server is running
 app.get('/api/health', (req, res) => {

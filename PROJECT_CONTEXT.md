@@ -188,9 +188,13 @@ Key: Similarity threshold set to 0.7 — below that, falls through to Tier 2
 - FULLY TESTED: all 8 events (4 agents × 2) fire in correct order ✅
 - Mongoose deprecation fixed: new:true → returnDocument:'after'
 
-### ⏳ Module 6: Analytics Routes — NOT STARTED
-- src/routes/analytics.routes.js
-- Aggregation queries: MTTR, incident frequency by week, top failing services, severity distribution
+### ✅ Module 6: Analytics Routes — COMPLETE
+- src/controllers/analytics.controller.js → WRITTEN (5 aggregation queries)
+- src/routes/analytics.routes.js → WRITTEN (5 endpoints, all protected)
+- Endpoints: GET /summary, /severity, /weekly, /mttr, /status
+- All 5 TESTED and WORKING ✅
+- Key techniques: $group, $match, $project, $sort, $isoWeek, $subtract, $avg, Promise.all
+- MTTR returns 0 correctly when no resolved incidents exist
 
 ### ⏳ Module 7: Frontend (React + TailwindCSS) — NOT STARTED
 Setup: Vite + React in client/ folder, TailwindCSS v3
