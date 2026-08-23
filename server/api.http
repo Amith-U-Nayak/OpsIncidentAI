@@ -1,0 +1,60 @@
+# OpsGenie AI - API Test File
+# How to use: Click "Send Request" that appears above each request
+# Make sure your server is running (npm run dev in server/ folder)
+
+###############################################
+# TEST 1: Health Check
+# Tests if the server is running
+###############################################
+GET http://localhost:5000/api/health
+
+###
+
+###############################################
+# TEST 2: Register a new user
+# Should return: { success: true, token: "...", user: {...} }
+###############################################
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Amith Nayak",
+  "email": "amith@test.com",
+  "password": "123456",
+  "organization": "VIT University"
+}
+
+###
+
+###############################################
+# TEST 3: Login with the user we just created
+# Should return: { success: true, token: "...", user: {...} }
+# COPY THE TOKEN FROM THIS RESPONSE - you'll need it for TEST 4
+###############################################
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "amith@test.com",
+  "password": "123456"
+}
+
+###
+
+###############################################
+# TEST 4: Get current user (protected route)
+# REPLACE "paste_your_token_here" with the token from TEST 3
+# Should return: { success: true, user: {...} }
+###############################################
+GET http://localhost:5000/api/auth/me
+Authorization: Bearer paste_your_token_here
+
+###
+
+###############################################
+# TEST 5: Try accessing protected route WITHOUT token
+# Should return: 401 Unauthorized
+###############################################
+GET http://localhost:5000/api/auth/me
+
+###
