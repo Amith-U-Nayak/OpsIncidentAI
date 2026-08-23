@@ -1,6 +1,7 @@
 const Incident = require('../models/Incident.model');
 const PostMortem = require('../models/PostMortem.model');
-const { app: agentGraph } = require('../agents/agentGraph'); // Import the compiled LangGraph pipeline
+const { app: agentGraph } = require('../agents/agentGraph');
+const { setSocketContext, clearSocketContext } = require('../socket/agentEvents');
 
 // ==========================================
 // CREATE INCIDENT
@@ -148,10 +149,16 @@ exports.runAnalysis = async (req, res) => {
 
     console.log(`🚀 Starting AI pipeline for incident: ${incident._id}`);
 
-    // Step 3: Fire the LangGraph pipeline!
-    // agentGraph.invoke() starts the pipeline and WAITS for all 4 agents to finish
-    // The pipeline runs Agent 1 → Agent 2 → Agent 3 → Agent 4 automatically
+    // Step 3: Set the Socket.IO context so all agents can emit real-time events
+    // req.app.get('io') retrieves the io instance we stored in app.js with app.set('io', io)
+    const io = req.app.get('io');
+    setSocketContext(io, incident._id.toString());
+
+    // Step 4: Fire the LangGraph pipeline!
     const finalState = await agentGraph.invoke(initialState);
+
+    // Step 5: Clear the socket context after pipeline finishes
+    clearSocketContext();
 
     console.log('✅ AI Pipeline complete! Final state:', finalState);
 

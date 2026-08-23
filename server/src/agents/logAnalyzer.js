@@ -1,5 +1,6 @@
 const { ChatGroq } = require("@langchain/groq");
 const { downloadLogFile, retryWithBackoff } = require("./tools");
+const { emitAgentEvent } = require("../socket/agentEvents");
 
 // ==========================================
 // 1. THE AI MODEL SETUP
@@ -58,6 +59,7 @@ const preFilterLogLines = (rawText) => {
 // ==========================================
 const logAnalyzer = async (state) => {
   console.log("🕵️‍♂️ [Log Analyzer] Agent started...");
+  emitAgentEvent('logAnalyzer', 'started', 'Downloading and scanning logs for error signals...');
 
   const logUrls = state.logs || [];
 
@@ -112,6 +114,11 @@ const logAnalyzer = async (state) => {
   });
 
   console.log("🕵️‍♂️ [Log Analyzer] Analysis complete!", aiResult);
+
+  emitAgentEvent('logAnalyzer', 'done', `Found ${aiResult.extractedErrors.length} error(s) — Severity: ${aiResult.severity}`, {
+    errorCount: aiResult.extractedErrors.length,
+    severity: aiResult.severity
+  });
 
   return {
     extractedErrors: aiResult.extractedErrors,

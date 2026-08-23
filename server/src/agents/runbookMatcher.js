@@ -3,6 +3,7 @@ const { z } = require("zod");
 const PostMortem = require("../models/PostMortem.model");
 const { generateEmbedding } = require("../services/embedding.service");
 const { retryWithBackoff } = require("./tools");
+const { emitAgentEvent } = require("../socket/agentEvents");
 
 // ==========================================
 // 1. AI MODEL SETUP
@@ -172,6 +173,7 @@ const askLLMDirectly = async (rootCause, extractedErrors, severity) => {
 // ==========================================
 const runbookMatcher = async (state) => {
   console.log("📗 [Runbook Matcher] Agent started...");
+  emitAgentEvent('runbookMatcher', 'started', 'Searching runbooks, history, and web for a solution...');
 
   const { rootCause, extractedErrors, severity } = state;
 
@@ -244,6 +246,11 @@ const runbookMatcher = async (state) => {
       isNovelIncident: solutionSource === 'Web Search' || solutionSource === 'AI Knowledge'
     };
   }
+
+  emitAgentEvent('runbookMatcher', 'done', `Solution found via: ${solutionSource}`, {
+    solutionSource,
+    isNovelIncident: finalResult.isNovelIncident
+  });
 
   // Write the final result to the State for Agent 4
   return {

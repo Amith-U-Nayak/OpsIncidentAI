@@ -179,10 +179,14 @@ Agent 3 follows this priority order:
 - Tier 1 TESTED and WORKING: score 0.81 on first real runbook match ✅
 Key: Similarity threshold set to 0.7 — below that, falls through to Tier 2
 
-### ⏳ Module 5: Real-time Socket.IO — NOT STARTED
-- src/socket/agentEvents.js → emit events at each agent step
-- Agent pipeline emits: agent_started, log_analyzed, root_cause_found, runbook_matched, post_mortem_complete
-- Frontend listens and updates live stepper UI
+### ✅ Module 5: Real-time Socket.IO — COMPLETE
+- src/socket/agentEvents.js → WRITTEN (Singleton pattern: setSocketContext, emitAgentEvent, clearSocketContext)
+- All 4 agents emit 'started' + 'done' events via emitAgentEvent()
+- incident.controller.js → sets socket context before pipeline, clears after
+- Event name: 'agent_update' → frontend listens to this
+- Event shape: { incidentId, agent, status, message, data, timestamp }
+- FULLY TESTED: all 8 events (4 agents × 2) fire in correct order ✅
+- Mongoose deprecation fixed: new:true → returnDocument:'after'
 
 ### ⏳ Module 6: Analytics Routes — NOT STARTED
 - src/routes/analytics.routes.js

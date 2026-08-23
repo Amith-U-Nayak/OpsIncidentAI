@@ -1,5 +1,6 @@
 const { ChatGroq } = require("@langchain/groq");
 const { retryWithBackoff } = require("./tools");
+const { emitAgentEvent } = require("../socket/agentEvents");
 
 // ==========================================
 // 1. THE AI MODEL SETUP
@@ -27,6 +28,7 @@ const parseJsonResponse = (text, fallback) => {
 // ==========================================
 const rootCauseAnalyzer = async (state) => {
   console.log("🔬 [Root Cause Analyzer] Agent started...");
+  emitAgentEvent('rootCauseAnalyzer', 'started', 'Tracing cause-and-effect chain from error symptoms...');
 
   const { extractedErrors, severity } = state;
 
@@ -80,6 +82,11 @@ const rootCauseAnalyzer = async (state) => {
   });
 
   console.log("🔬 [Root Cause Analyzer] Analysis complete!", aiResult);
+
+  emitAgentEvent('rootCauseAnalyzer', 'done', `Root cause identified (${aiResult.confidence}% confidence)`, {
+    rootCause: aiResult.rootCause,
+    confidence: aiResult.confidence
+  });
 
   return {
     rootCause: aiResult.rootCause,

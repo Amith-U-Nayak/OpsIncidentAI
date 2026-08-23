@@ -1,5 +1,6 @@
 const { ChatGroq } = require("@langchain/groq");
 const { retryWithBackoff } = require("./tools");
+const { emitAgentEvent } = require("../socket/agentEvents");
 const PostMortem = require("../models/PostMortem.model");
 const Incident = require("../models/Incident.model");
 
@@ -29,6 +30,7 @@ const parseJsonResponse = (text, fallback) => {
 // ==========================================
 const postMortemGenerator = async (state) => {
   console.log("📝 [Post-Mortem Generator] Agent started...");
+  emitAgentEvent('postMortemGenerator', 'started', 'Writing incident post-mortem report...');
 
   const { incidentId, extractedErrors, severity, rootCause, confidence, runbookSolution } = state;
 
@@ -95,7 +97,7 @@ const postMortemGenerator = async (state) => {
       actionItems: aiResult.actionItems,
       generatedBy: "System/AI",
     },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
 
   // Also update the Incident status and AI root cause for quick reference
@@ -105,6 +107,10 @@ const postMortemGenerator = async (state) => {
   });
 
   console.log(`📝 [Post-Mortem Generator] Done! Post-mortem saved with ID: ${savedPostMortem._id}`);
+
+  emitAgentEvent('postMortemGenerator', 'done', 'Post-mortem report saved successfully!', {
+    postMortemId: savedPostMortem._id.toString()
+  });
 
   return {
     postMortemId: savedPostMortem._id.toString(),
