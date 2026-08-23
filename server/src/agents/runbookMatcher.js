@@ -1,6 +1,8 @@
 const { ChatGroq } = require("@langchain/groq");
 const { z } = require("zod");
 const PostMortem = require("../models/PostMortem.model");
+const { generateEmbedding } = require("../services/embedding.service");
+const { retryWithBackoff } = require("./tools");
 
 // ==========================================
 // 1. AI MODEL SETUP
@@ -12,10 +14,6 @@ const llm = new ChatGroq({
 
 // ==========================================
 // 2. STRUCTURED OUTPUT SCHEMA
-// Agent 3 must return:
-//   - solution       : the recommended fix steps
-//   - solutionSource : where the solution came from (for transparency)
-//   - isNovelIncident: flag to tell engineers "write a new runbook for this"
 // ==========================================
 const RunbookSchema = z.object({
   solution: z.string().describe("Clear, actionable steps an engineer should take to resolve this incident"),
@@ -25,33 +23,56 @@ const RunbookSchema = z.object({
     .describe("True if this incident has never been seen before and a new runbook should be created"),
 });
 
-const structuredLlm = llm.withStructuredOutput(RunbookSchema);
-
 // ==========================================
-// TIER 1: SEARCH COMPANY RUNBOOKS (MongoDB)
-// NOTE: The Runbook model is built in Module 4.
-// This tier is coded now but fully activates in Module 4.
-// Currently returns null so the system falls through to Tier 2.
+// TIER 1: SEARCH COMPANY RUNBOOKS — NOW ACTIVE (Module 4)
+// Uses MongoDB Atlas Vector Search to find semantically similar runbooks.
+//
+// Analogy: Like a librarian who doesn't search by exact title,
+// but finds books by MEANING — "connection refused" and "port blocked"
+// would both match a runbook about "network connectivity issues".
 // ==========================================
 const searchRunbooks = async (rootCause) => {
   try {
-    // Try to require the Runbook model (will exist after Module 4)
     const Runbook = require("../models/Runbook.model");
-    
-    // Simple text search on the runbook's content and tags
-    // In Module 4, this will be upgraded to MongoDB Atlas Vector Search
-    const results = await Runbook.find({
-      $text: { $search: rootCause }
-    }).limit(1);
 
-    if (results.length > 0) {
-      console.log("📗 [Runbook Matcher] TIER 1: Found matching runbook!");
-      return results[0].content; // Return the runbook's solution text
+    // Step 1: Convert the root cause text into a vector (array of 384 numbers)
+    console.log("📗 [Runbook Matcher] TIER 1: Generating query embedding...");
+    const queryEmbedding = await generateEmbedding(rootCause);
+
+    // Step 2: Run MongoDB Atlas Vector Search
+    // This finds runbooks whose embeddings are closest to the query embedding
+    // "Closest" means most similar in meaning (cosine similarity)
+    const results = await Runbook.aggregate([
+      {
+        $vectorSearch: {
+          index: "runbook_vector_index", // The index we create in Atlas UI
+          path: "embedding",             // The field storing our 384-number vectors
+          queryVector: queryEmbedding,   // The query converted to 384 numbers
+          numCandidates: 20,             // Search through 20 candidates
+          limit: 1,                      // Return only the best match
+        }
+      },
+      {
+        $project: {
+          title: 1,
+          content: 1,
+          tags: 1,
+          score: { $meta: "vectorSearchScore" },
+        }
+      }
+    ]);
+
+    // Only use the result if the similarity score is above 0.7 (70% similar)
+    // Below that, the match isn't reliable enough to use
+    if (results.length > 0 && results[0].score >= 0.7) {
+      console.log(`📗 [Runbook Matcher] TIER 1: Found matching runbook! Score: ${results[0].score.toFixed(2)} — "${results[0].title}"`);
+      return results[0].content;
     }
-    return null; // No match found
+
+    console.log("📗 [Runbook Matcher] TIER 1: No sufficiently similar runbook found. Falling to Tier 2.");
+    return null;
   } catch (err) {
-    // Runbook model doesn't exist yet (Module 4) — silently skip
-    console.log("📗 [Runbook Matcher] TIER 1: Runbook model not ready yet (Module 4). Skipping.");
+    console.log("📗 [Runbook Matcher] TIER 1: Vector search error:", err.message, "— Falling to Tier 2.");
     return null;
   }
 };
@@ -189,21 +210,40 @@ const runbookMatcher = async (state) => {
 
   console.log(`📗 [Runbook Matcher] Solution found via: ${solutionSource}`);
 
-  // Ask the LLM to format the final solution into our structured schema
+  // Ask the LLM to format the final solution into clean structured steps
   const prompt = `
   You are formatting an incident resolution report.
-  
+
   Root Cause: ${rootCause}
   Solution Source: ${solutionSource}
   Raw Solution Content:
   ${solution}
 
   Format this into clear, actionable resolution steps.
-  Set isNovelIncident to true if the source was "Web Search" or "AI Knowledge" 
+  isNovelIncident should be true if the source was "Web Search" or "AI Knowledge"
   (meaning the company has no runbook for this yet).
+
+  Respond ONLY with valid JSON in this exact format (no extra text, no markdown):
+  {
+    "solution": "clear numbered resolution steps here",
+    "solutionSource": "${solutionSource}",
+    "isNovelIncident": ${solutionSource === 'Web Search' || solutionSource === 'AI Knowledge'}
+  }
   `;
 
-  const finalResult = await structuredLlm.invoke(prompt);
+  const response = await retryWithBackoff(() => llm.invoke(prompt));
+  let finalResult;
+  try {
+    const cleaned = response.content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    finalResult = JSON.parse(cleaned);
+  } catch (e) {
+    // If JSON parse fails, use the raw solution text as fallback
+    finalResult = {
+      solution: solution,
+      solutionSource: solutionSource,
+      isNovelIncident: solutionSource === 'Web Search' || solutionSource === 'AI Knowledge'
+    };
+  }
 
   // Write the final result to the State for Agent 4
   return {

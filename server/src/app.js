@@ -103,15 +103,13 @@ io.on('connection', (socket) => {
 // Import route files
 // Each route file handles a specific feature area
 const authRoutes = require('./routes/auth.routes');
-const incidentRoutes = require('./routes/incident.routes'); // [NEW] Added incident routes
+const incidentRoutes = require('./routes/incident.routes');
+const runbookRoutes = require('./routes/runbook.routes'); // [NEW] Module 4
 
 // Register routes with a base path prefix
-// Any request to /api/auth/... will be handled by authRoutes
-// Example: POST /api/auth/register → goes to auth.routes.js → register controller
 app.use('/api/auth', authRoutes);
-
-// Register incident routes
-app.use('/api/incidents', incidentRoutes); // [NEW] Link the incidents URL to the incident routes
+app.use('/api/incidents', incidentRoutes);
+app.use('/api/runbooks', runbookRoutes); // [NEW] Module 4
 
 // Test route - visit http://localhost:5000/api/health to verify server is running
 app.get('/api/health', (req, res) => {

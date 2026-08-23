@@ -168,12 +168,16 @@ Agent 3 follows this priority order:
 ⚠️ REQUIRED IN .env: TAVILY_API_KEY (done ✅)
 ⚠️ REQUIRED: @langchain/tavily installed (done ✅)
 
-### ⏳ Module 4: RAG Pipeline (Runbook Vector Search) — NOT STARTED
-- src/models/Runbook.model.js → title, content, embedding(array), tags, source
-- src/services/embedding.service.js → embed text using @langchain/groq or community embeddings
-- src/services/vectorSearch.service.js → MongoDB Atlas Vector Search queries
-- MongoDB Atlas: create vector search index on runbooks.embedding field (dimensions: 768, similarity: cosine)
-- src/routes/runbook.routes.js → upload, list, search runbooks
+### ✅ Module 4: RAG Pipeline (Runbook Vector Search) — COMPLETE
+- src/models/Runbook.model.js → WRITTEN (embedding: [Number] field, 384 dimensions)
+- src/services/embedding.service.js → WRITTEN (HuggingFace all-MiniLM-L6-v2, 384-dim vectors)
+- src/controllers/runbook.controller.js → WRITTEN (create, list, get, delete, semantic search)
+- src/routes/runbook.routes.js → WRITTEN (POST /api/runbooks, GET, DELETE, POST /search)
+- src/agents/runbookMatcher.js → UPDATED (Tier 1 now uses real $vectorSearch aggregation)
+- MongoDB Atlas: runbook_vector_index created (vectorSearch, cosine similarity, 384 dims) ✅
+- npm package: @huggingface/inference installed
+- Tier 1 TESTED and WORKING: score 0.81 on first real runbook match ✅
+Key: Similarity threshold set to 0.7 — below that, falls through to Tier 2
 
 ### ⏳ Module 5: Real-time Socket.IO — NOT STARTED
 - src/socket/agentEvents.js → emit events at each agent step
