@@ -47,7 +47,6 @@ const userSchema = new mongoose.Schema(
     // One organization = one team (e.g., "Zepto Engineering Team")
     organization: {
       type: String,
-      required: [true, 'Organization name is required'],
       trim: true
     },
 

@@ -47,11 +47,11 @@ const register = async (req, res) => {
     // ── STEP 1: Validate required fields ──────────────────────
     // Check if any required field is missing
     // If frontend forgot to send email, for example, stop here and tell them
-    if (!name || !email || !password || !organization) {
+    if (!name || !email || !password) {
       return res.status(400).json({
         // status(400) = "Bad Request" - the client sent wrong/incomplete data
         success: false,
-        message: 'Please provide name, email, password, and organization'
+        message: 'Please provide name, email, and password'
       });
     }
 

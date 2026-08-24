@@ -1,0 +1,10 @@
+[2026-08-24T10:15:01.001Z] INFO: Server started on port 3000
+[2026-08-24T10:15:05.120Z] INFO: Connected to MongoDB Atlas successfully
+[2026-08-24T10:20:11.405Z] WARN: High CPU usage detected (85%)
+[2026-08-24T10:21:05.992Z] INFO: Processing bulk image upload request for user_id: 88291
+[2026-08-24T10:21:10.111Z] WARN: Memory usage exceeding 80% of allocated heap
+[2026-08-24T10:21:12.445Z] ERROR: Cannot allocate buffer. Requested: 150MB, Available: 12MB.
+[2026-08-24T10:21:14.002Z] FATAL: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
+[2026-08-24T10:21:14.005Z] FATAL: Process terminated with exit code 134
+[2026-08-24T10:21:14.008Z] ERROR: Connection to MongoDB closed unexpectedly
+[2026-08-24T10:22:00.000Z] ERROR: Nginx upstream prematurely closed connection while reading response header from upstream

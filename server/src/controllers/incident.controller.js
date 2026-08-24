@@ -2,6 +2,7 @@ const Incident = require('../models/Incident.model');
 const PostMortem = require('../models/PostMortem.model');
 const { app: agentGraph } = require('../agents/agentGraph');
 const { setSocketContext, clearSocketContext } = require('../socket/agentEvents');
+const { sendWebhook } = require('../services/webhook.service');
 
 // ==========================================
 // CREATE INCIDENT
@@ -23,6 +24,17 @@ exports.createIncident = async (req, res) => {
       logs,
       createdBy: req.user.id
     });
+
+    // Trigger n8n Slack Webhook if Critical
+    if (newIncident.severity === 'Critical') {
+      sendWebhook(process.env.N8N_CRITICAL_WEBHOOK_URL, {
+        event: 'incident_created',
+        incidentId: newIncident._id,
+        title: newIncident.title,
+        severity: newIncident.severity,
+        url: `${process.env.CLIENT_URL}/incidents/${newIncident._id}`
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -92,6 +104,23 @@ exports.updateStatus = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Incident not found' });
     }
 
+    // Trigger n8n Post-Mortem Email Webhook if Resolved
+    if (status === 'Resolved') {
+      const pm = await PostMortem.findOne({ incident: incident._id });
+      
+      sendWebhook(process.env.N8N_RESOLVED_WEBHOOK_URL, {
+        event: 'incident_resolved',
+        incidentId: incident._id,
+        title: incident.title,
+        postMortem: pm ? {
+          summary: pm.summary,
+          rootCause: pm.rootCause,
+          resolution: pm.resolution,
+          actionItems: pm.actionItems
+        } : null
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: incident
@@ -123,8 +152,6 @@ exports.deleteIncident = async (req, res) => {
 
 // ==========================================
 // RUN AI ANALYSIS ON AN INCIDENT
-// This is the trigger that fires the full LangGraph pipeline
-// Analogy: pressing the big red "ANALYSE" button in the UI
 // ==========================================
 exports.runAnalysis = async (req, res) => {
   try {
@@ -135,12 +162,11 @@ exports.runAnalysis = async (req, res) => {
     }
 
     // Step 2: Build the initial State object to pass into the LangGraph pipeline
-    // This is like placing the first piece on the assembly line conveyor belt
     const initialState = {
       incidentId: incident._id.toString(),
-      logs: incident.logs,         // Array of Cloudinary URLs from the incident
+      logs: incident.logs,
       extractedErrors: [],
-      severity: incident.severity, // Starting severity (AI may upgrade it)
+      severity: incident.severity,
       rootCause: null,
       confidence: 0,
       runbookSolution: null,
@@ -150,7 +176,6 @@ exports.runAnalysis = async (req, res) => {
     console.log(`🚀 Starting AI pipeline for incident: ${incident._id}`);
 
     // Step 3: Set the Socket.IO context so all agents can emit real-time events
-    // req.app.get('io') retrieves the io instance we stored in app.js with app.set('io', io)
     const io = req.app.get('io');
     setSocketContext(io, incident._id.toString());
 
@@ -177,5 +202,77 @@ exports.runAnalysis = async (req, res) => {
   } catch (error) {
     console.error('❌ AI Pipeline failed:', error.message);
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// ==========================================
+// GET POST-MORTEM FOR INCIDENT
+// ==========================================
+exports.getPostMortem = async (req, res) => {
+  try {
+    const postMortem = await PostMortem.findOne({ incident: req.params.id });
+    
+    if (!postMortem) {
+      return res.status(404).json({ success: false, error: 'Post-mortem not found for this incident' });
+    }
+
+    res.status(200).json({ success: true, data: postMortem });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// ==========================================
+// [NEW] INGEST EXTERNAL ALERT (Datadog/AWS)
+// ==========================================
+exports.ingestExternalAlert = async (req, res) => {
+  try {
+    const { title, description, severity, source, rawLogText } = req.body;
+
+    if (!title || !description) {
+      return res.status(400).json({ success: false, error: 'Title and description are required' });
+    }
+
+    // 1. Format the description to include the raw log text if provided
+    const fullDescription = rawLogText 
+      ? `${description}\n\n[EXTERNAL LOGS FROM ${source || 'SYSTEM'}]\n${rawLogText}`
+      : description;
+
+    // 2. Create the incident in MongoDB
+    const incident = await Incident.create({
+      title: `[${source || 'ALERT'}] ${title}`,
+      description: fullDescription,
+      severity: severity || 'High',
+      status: 'Open',
+      logs: [] // No file attached, logs are embedded in description
+    });
+
+    // Trigger Slack webhook for critical external ingestions
+    if (incident.severity === 'Critical') {
+      sendWebhook(process.env.N8N_CRITICAL_WEBHOOK_URL, {
+        event: 'incident_ingested',
+        incidentId: incident._id,
+        title: incident.title,
+        severity: incident.severity,
+        source: source || 'External',
+        url: `${process.env.CLIENT_URL}/incidents/${incident._id}`
+      });
+    }
+
+    // 3. (Optional but awesome) Trigger the AI pipeline immediately in the background
+    exports.runAnalysis({ params: { id: incident._id }, app: req.app }, { 
+      status: () => ({ json: () => {} }) // Dummy response object for background execution
+    }).catch(err => console.error("Background AI failed:", err));
+
+    // 4. Respond to the external system instantly
+    res.status(201).json({
+      success: true,
+      message: 'Alert ingested successfully and AI pipeline triggered',
+      data: incident
+    });
+
+  } catch (error) {
+    console.error('Ingestion error:', error);
+    res.status(500).json({ success: false, error: 'Failed to ingest alert' });
   }
 };

@@ -5,14 +5,23 @@ const {
   getIncidentById,
   updateStatus,
   deleteIncident,
-  runAnalysis   // [NEW] trigger the AI pipeline
+  runAnalysis,
+  getPostMortem,
+  ingestExternalAlert
 } = require('../controllers/incident.controller');
 
 // Import our middlewares
 const { protect } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload.middleware');
+const authorizeApiKey = require('../middleware/apikey.middleware');
 
 const router = express.Router();
+
+// ==========================================
+// [NEW] EXTERNAL SYSTEM WEBHOOKS (No JWT required)
+// ==========================================
+// Tools like Datadog will POST to this URL with their API Key
+router.post('/ingest', authorizeApiKey, ingestExternalAlert);
 
 // Apply protect middleware to ALL incident routes below this line
 // This means you MUST be logged in (have a valid JWT token) to do anything with incidents
@@ -44,6 +53,9 @@ router
 router
   .route('/:id/status')
   .patch(updateStatus);
+
+// [NEW] Fetch Post-Mortem
+router.get('/:id/postmortem', getPostMortem);
 
 // ---------------------------------------------------------
 // Route:       /api/incidents/:id/analyse

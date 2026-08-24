@@ -196,15 +196,23 @@ Key: Similarity threshold set to 0.7 — below that, falls through to Tier 2
 - Key techniques: $group, $match, $project, $sort, $isoWeek, $subtract, $avg, Promise.all
 - MTTR returns 0 correctly when no resolved incidents exist
 
-### ⏳ Module 7: Frontend (React + TailwindCSS) — NOT STARTED
-Setup: Vite + React in client/ folder, TailwindCSS v3
-Pages: Landing, Login/Register, Dashboard, New Incident (with live agent stepper), Incident Detail (5 tabs), Runbooks, Analytics
+### ✅ Module 7: Frontend (React + TailwindCSS) — COMPLETE
+- Setup: Vite + React in client/ folder, TailwindCSS v3 ✅
+- Foundation: axios instance, AuthContext, SocketContext, ProtectedRoute, Sidebar, App Router ✅
+- Pages Done: Login, Register, Dashboard, Incidents, NewIncident (live stepper), IncidentDetail (5 tabs), Runbooks ✅
+- HCI Principles applied: Chunking (tabs), Visibility of System Status (stepper), Error Prevention (form validation).
 
-### ⏳ Module 8: n8n Automation — NOT STARTED
-Workflows: Slack alert (CRITICAL incidents), Post-mortem email, Health checks every 5min, Weekly report
+### 🔄 Module 8: n8n Automation — PENDING (Visual setup required)
+Workflows to build: Slack alert (CRITICAL incidents), Post-mortem email, Health checks every 5min, Weekly report
+(Backend Webhook code is completed. Remaining: Visual node drag-and-drop in n8n dashboard).
 
 ### ⏳ Module 9: Deployment — NOT STARTED
 Frontend → Vercel, Backend → Render, env vars on both platforms
+
+### ⏳ Module 10: Automated Testing (QA) — NOT STARTED
+- **Backend (Jest + Supertest):** Unit tests for Express routes, MongoDB, and Mocking the LangChain AI calls to test orchestration.
+- **Frontend (Playwright):** End-to-end (E2E) UI testing using Playwright's `codegen` auto-recording.
+- **AI Evaluation (Promptfoo):** LLM Evals to test prompt quality.
 
 ---
 
@@ -258,6 +266,13 @@ Frontend → Vercel, Backend → Render, env vars on both platforms
 - Fix: Removed withStructuredOutput() and zod schemas from all agents. Replaced with prompt-based JSON — model instructed to return raw JSON, parsed with JSON.parse() + markdown code-fence stripper + graceful fallback defaults.
 - Interview answer: "I learned that LangChain's withStructuredOutput() is not model-agnostic — it relies on provider-specific features like tool calling. When I switched models, it silently broke. I replaced it with a prompt-engineering approach: explicitly instructing the model to return raw JSON and parsing it myself with error handling. This made the code portable across any LLM provider."
 
+### Bug 8: Mongoose schema optional field rejected by Express controller
+- When: Modifying User model so "organization" is optional for solo developers.
+- Error: API still rejected registration with "Please provide organization".
+- Root cause: Removed `required: true` from Mongoose schema, but forgot to remove the manual hardcoded `if (!organization)` check inside `auth.controller.js`.
+- Fix: Removed the duplicate validation in the controller.
+- Interview answer: "I discovered a bug where my API rejected valid requests because of duplicate validation logic. It taught me the importance of having a Single Source of Truth for validation (like the DB schema or Zod) instead of hardcoding redundant checks in the controllers."
+
 ---
 
 ## 🎤 Interview Q&A Progress
@@ -269,8 +284,11 @@ Q2 ✅ Why this tech stack?
 → See foundation_guide.md for full answer
 
 Q3 🔄 How does it work internally? (Building answer through modules)
-Current answer covers: JWT auth flow, bcrypt password hashing, MongoDB schema design, middleware chain
+Current answer covers: JWT auth flow, bcrypt password hashing, MongoDB schema design, middleware chain, LangGraph AI orchestration.
 
-Q4 🔄 What challenges did you face? → Bug 1, 2, 3 above (more being added)
+Q4 🔄 What challenges did you face? → See Bugs 1-8 above
 
 Q5 🔄 How did you solve them? → See bug fixes above
+
+Q6 ✅ What happens if a critical alert triggers but n8n is offline?
+→ Answer: "Currently, I built synchronous Webhooks (using node-fetch) wrapped in a try/catch, so if n8n is offline, the webhook fails silently but the Node server stays alive. However, for a true enterprise production environment, I would decouple the webhook by using a Message Queue (like RabbitMQ or Redis BullMQ). The queue guarantees 'at-least-once delivery' by holding the message in memory and retrying with exponential backoff until n8n comes back online, ensuring no critical Slack alerts are ever dropped."
