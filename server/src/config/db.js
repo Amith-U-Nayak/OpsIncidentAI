@@ -10,6 +10,11 @@ const mongoose = require('mongoose');
 // We mark it 'async' because connecting takes time (it's a network call)
 // 'async' means: "this function does something that takes time, wait for it"
 const connectDB = async () => {
+  if (process.env.NODE_ENV === 'test') {
+    console.log('🧪 Test mode detected - skipping real MongoDB connection.');
+    return;
+  }
+
   try {
     // mongoose.connect() makes the actual connection
     // process.env.MONGODB_URI reads the connection string from your .env file

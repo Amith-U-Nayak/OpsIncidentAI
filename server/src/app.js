@@ -122,16 +122,20 @@ app.get('/api/health', (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-// STEP 8: Start the Server
+// STEP 8: Start the Server (Skip during testing)
 // ─────────────────────────────────────────────
 // process.env.PORT reads from .env → 5000
-// If PORT isn't set (just in case), use 5000 as fallback (the || 5000 part)
 const PORT = process.env.PORT || 5000;
 
-// httpServer.listen() starts the server
-// It "opens the restaurant doors" and starts accepting requests on port 5000
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📡 Socket.IO ready for real-time connections`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-});
+// When running tests with Supertest, we do NOT want the server to actually listen on a port
+// Supertest handles the networking virtually.
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📡 Socket.IO ready for real-time connections`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+  });
+}
+
+// Export the app for testing
+module.exports = { app, httpServer };

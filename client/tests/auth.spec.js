@@ -1,0 +1,36 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+    await page.goto('http://localhost:5173/login');
+    await page.getByRole('textbox', { name: 'you@example.com' }).click();
+    await page.getByRole('link', { name: 'Register' }).click();
+    await page.getByRole('textbox', { name: 'Enter your full name' }).click();
+    await page.getByRole('textbox', { name: 'Enter your full name' }).fill('tester1');
+    await page.getByRole('textbox', { name: 'Enter your email' }).click();
+    await page.getByRole('textbox', { name: 'Enter your email' }).fill('test1@gmail.com');
+    await page.getByRole('textbox', { name: 'Enter your full name' }).click();
+    await page.getByRole('textbox', { name: 'Enter your full name' }).click();
+    await page.getByRole('textbox', { name: 'Enter your full name' }).press('ArrowLeft');
+    await page.getByRole('textbox', { name: 'Enter your full name' }).fill('test1');
+    await page.getByRole('textbox', { name: '••••••••' }).click();
+    await page.getByRole('textbox', { name: '••••••••' }).fill('test1password');
+    await page.getByRole('button', { name: '👁️' }).click();
+    await page.getByRole('button', { name: '👁️' }).click();
+    await page.getByRole('button', { name: '🙈' }).click();
+    await page.getByRole('textbox', { name: 'Add Organization or leave' }).click();
+    await page.getByRole('button', { name: 'Create Account' }).click();
+    await page.getByRole('textbox', { name: 'you@example.com' }).click();
+    await page.getByRole('textbox', { name: 'you@example.com' }).fill('test1@gmail.com');
+    await page.getByRole('textbox', { name: '••••••••' }).click();
+    await page.getByRole('textbox', { name: '••••••••' }).fill('test1password');
+    await page.getByRole('button', { name: 'Sign In' }).click();
+    await page.getByRole('link', { name: '🚨 Incidents' }).click();
+    await page.getByRole('cell', { name: 'Database connection failure' }).click();
+    await page.getByRole('link', { name: '📖 Runbooks' }).click();
+    await page.getByRole('link', { name: '➕ New Incident' }).click();
+    await page.getByRole('link', { name: '📊 Dashboard' }).click();
+    await page.getByRole('application').filter({ hasText: 'W33W34W3501234' }).click();
+    await page.getByText('Open / Investigating2 /').click();
+    await page.getByText('5', { exact: true }).click();
+    await page.getByRole('button', { name: '🚪 Logout' }).click();
+});

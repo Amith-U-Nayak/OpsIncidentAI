@@ -209,10 +209,10 @@ Workflows to build: Slack alert (CRITICAL incidents), Post-mortem email, Health 
 ### ⏳ Module 9: Deployment — NOT STARTED
 Frontend → Vercel, Backend → Render, env vars on both platforms
 
-### ⏳ Module 10: Automated Testing (QA) — NOT STARTED
-- **Backend (Jest + Supertest):** Unit tests for Express routes, MongoDB, and Mocking the LangChain AI calls to test orchestration.
-- **Frontend (Playwright):** End-to-end (E2E) UI testing using Playwright's `codegen` auto-recording.
-- **AI Evaluation (Promptfoo):** LLM Evals to test prompt quality.
+### ✅ Module 10: Automated Testing (QA) — COMPLETE
+- **Backend (Jest + Supertest):** Unit tests written for Auth and Incident routes. Configured `mongodb-memory-server` for isolated DB testing. Successfully mocked LangGraph AI pipeline to prevent API calls during tests.
+- **Frontend (Playwright):** End-to-end (E2E) UI testing configured. Used `codegen` to auto-record user flows and the Playwright UI dashboard for time-travel debugging.
+- *(Note: Skipped Promptfoo LLM evals to focus on core web app deployment).*
 
 ---
 
@@ -292,3 +292,6 @@ Q5 🔄 How did you solve them? → See bug fixes above
 
 Q6 ✅ What happens if a critical alert triggers but n8n is offline?
 → Answer: "Currently, I built synchronous Webhooks (using node-fetch) wrapped in a try/catch, so if n8n is offline, the webhook fails silently but the Node server stays alive. However, for a true enterprise production environment, I would decouple the webhook by using a Message Queue (like RabbitMQ or Redis BullMQ). The queue guarantees 'at-least-once delivery' by holding the message in memory and retrying with exponential backoff until n8n comes back online, ensuring no critical Slack alerts are ever dropped."
+
+Q7 ✅ How did you approach Automated Testing for the backend?
+→ Answer: "I focused on proving testing architecture rather than 100% coverage. I demonstrated two senior-level skills: First, I set up an isolated test environment using `mongodb-memory-server` and `supertest` so tests don't corrupt the production database or require the server to listen on a port. Second, I mocked the LangGraph AI pipeline. In the real world, you never want automated tests hitting live LLM APIs because it wastes money, creates slow/flaky tests, and breaks CI/CD pipelines if the provider is down. I used Jest to intercept the controller's call to the AI agent and instantly return a fake Post-Mortem instead."
