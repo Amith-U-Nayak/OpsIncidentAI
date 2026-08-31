@@ -206,13 +206,19 @@ Key: Similarity threshold set to 0.7 — below that, falls through to Tier 2
 Workflows to build: Slack alert (CRITICAL incidents), Post-mortem email, Health checks every 5min, Weekly report
 (Backend Webhook code is completed. Remaining: Visual node drag-and-drop in n8n dashboard).
 
-### ⏳ Module 9: Deployment — NOT STARTED
-Frontend → Vercel, Backend → Render, env vars on both platforms
+### 🚀 Module 9: Docker & Containerization (DevOps) — IN PROGRESS
+- **Goal:** Containerize the application to solve the "it works on my machine" problem and prepare for enterprise deployment.
+- **Tasks:** Write `Dockerfile` for the backend. Write `docker-compose.yml` for local development.
 
 ### ✅ Module 10: Automated Testing (QA) — COMPLETE
 - **Backend (Jest + Supertest):** Unit tests written for Auth and Incident routes. Configured `mongodb-memory-server` for isolated DB testing. Successfully mocked LangGraph AI pipeline to prevent API calls during tests.
 - **Frontend (Playwright):** End-to-end (E2E) UI testing configured. Used `codegen` to auto-record user flows and the Playwright UI dashboard for time-travel debugging.
 - *(Note: Skipped Promptfoo LLM evals to focus on core web app deployment).*
+
+### ⏳ Module 11: Cloud Deployment & Kubernetes — NOT STARTED
+- **Docker + Render:** Deploy the backend Docker container to Render.com.
+- **Frontend:** Deploy to Vercel (Root Directory: `client`).
+- **Kubernetes (Optional):** Write `deployment.yaml` and `service.yaml` manifests.
 
 ---
 
@@ -295,3 +301,6 @@ Q6 ✅ What happens if a critical alert triggers but n8n is offline?
 
 Q7 ✅ How did you approach Automated Testing for the backend?
 → Answer: "I focused on proving testing architecture rather than 100% coverage. I demonstrated two senior-level skills: First, I set up an isolated test environment using `mongodb-memory-server` and `supertest` so tests don't corrupt the production database or require the server to listen on a port. Second, I mocked the LangGraph AI pipeline. In the real world, you never want automated tests hitting live LLM APIs because it wastes money, creates slow/flaky tests, and breaks CI/CD pipelines if the provider is down. I used Jest to intercept the controller's call to the AI agent and instantly return a fake Post-Mortem instead."
+
+Q8 ✅ Why did you use Docker, and how does it fit into your deployment lifecycle?
+→ Answer: "I used Docker to solve the 'it works on my machine' problem. By containerizing the Node.js backend, I guarantee that the environment (Node version, OS dependencies) is identical on my Windows laptop, my coworker's Mac, and the final cloud server. My workflow relies on GitHub as the bridge: developers push code and the `Dockerfile` to GitHub. Then, a CI/CD pipeline reads that `Dockerfile`, bakes the final immutable container image, and deploys it to a cloud provider like Render or AWS. This entirely separates the act of 'running' code from 'hosting' code."
