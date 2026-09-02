@@ -6,10 +6,10 @@ import api from '../api/axios';
 // HCI Principle: Color coding builds a mental model.
 // Critical = Red (Danger), High = Orange (Warning), Medium = Yellow, Low = Blue (Info)
 const SEVERITY_COLORS = {
-  Critical: '#ef4444', 
-  High: '#f97316',     
-  Medium: '#eab308',   
-  Low: '#3b82f6'       
+  Critical: '#ef4444',
+  High: '#f97316',
+  Medium: '#eab308',
+  Low: '#3b82f6'
 };
 
 const Dashboard = () => {
@@ -71,9 +71,9 @@ const Dashboard = () => {
           <p className="text-zinc-400 text-sm">Real-time incident analytics</p>
         </div>
         {/* HCI Principle: Primary Action is distinct and easily accessible */}
-        <Link 
-          to="/incidents/new" 
-          className="bg-white text-black hover:bg-zinc-200 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+        <Link
+          to="/incidents/new"
+          className="bg-white text-gray-900 hover:bg-zinc-200 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2 shadow-lg shadow-indigo-500/20"
         >
           <span>➕</span> Report Incident
         </Link>
@@ -112,25 +112,25 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                <XAxis 
-                  dataKey="week" 
-                  stroke="#94a3b8" 
-                  tickFormatter={(val) => `W${val}`} 
-                  tick={{ fontSize: 12 }} 
+                <XAxis
+                  dataKey="week"
+                  stroke="#94a3b8"
+                  tickFormatter={(val) => `W${val}`}
+                  tick={{ fontSize: 12 }}
                 />
                 <YAxis stroke="#94a3b8" allowDecimals={false} tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f8fafc' }}
                   itemStyle={{ color: '#818cf8' }}
                   labelFormatter={(val) => `Week ${val}`}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="count" 
-                  stroke="#818cf8" 
-                  strokeWidth={3} 
-                  dot={{ r: 4, fill: '#818cf8', strokeWidth: 2, stroke: '#1e293b' }} 
-                  activeDot={{ r: 6 }} 
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#818cf8"
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: '#818cf8', strokeWidth: 2, stroke: '#1e293b' }}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -158,7 +158,7 @@ const Dashboard = () => {
                       <Cell key={`cell-${index}`} fill={SEVERITY_COLORS[entry.severity] || '#94a3b8'} />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
                     itemStyle={{ color: '#f8fafc' }}
                   />
