@@ -118,22 +118,25 @@ const IncidentDetail = () => {
         </div>
       </div>
 
-      {/* Tabs - HCI Principle: Chunking */}
-      <div className="flex border-b border-zinc-800 mb-6 overflow-x-auto">
-        {TABS.map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
-              activeTab === tab 
-                ? 'border-white text-zinc-300' 
-                : 'border-transparent text-zinc-400 hover:text-slate-200 hover:border-zinc-800'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+        {/* Tabs - HCI Principle: Chunking */}
+        <div className="flex border-b border-zinc-800 mb-6 overflow-x-auto">
+          {TABS.filter(tab => {
+            if (user?.role === 'viewer' && (tab === 'Logs & Errors' || tab === 'Runbook Solution')) return false;
+            return true;
+          }).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-3 font-medium text-sm transition-all border-b-2 whitespace-nowrap ${
+                activeTab === tab
+                  ? 'border-white text-white bg-white/5'
+                  : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-700 hover:bg-white/5'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
 
       {/* Tab Content */}
       <div className="bg-zinc-950 rounded-md p-6 border border-zinc-800 min-h-[400px]">
