@@ -59,16 +59,27 @@ const IncidentDetail = () => {
 
   return (
     <div className="max-w-5xl mx-auto">
+      {/* Back Button */}
+      <button 
+        onClick={() => navigate('/incidents')}
+        className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-6 text-sm font-medium"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Incidents
+      </button>
+
       {/* Header section */}
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-8 gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold text-white">{incident.title}</h1>
-            <span className="px-3 py-1 rounded-full text-xs font-bold border border-zinc-800 bg-zinc-950 text-slate-300">
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">{incident.title}</h1>
+            <span className="px-3 py-1 rounded-full text-xs font-bold border border-zinc-800 bg-zinc-950 text-zinc-300">
               {incident.status}
             </span>
           </div>
-          <p className="text-zinc-400">Reported on {new Date(incident.createdAt).toLocaleString()}</p>
+          <p className="text-zinc-400 text-sm md:text-base">Reported on {new Date(incident.createdAt).toLocaleString()}</p>
         </div>
         
         <div className="flex gap-3">
@@ -76,17 +87,11 @@ const IncidentDetail = () => {
             <button 
               onClick={handleResolve}
               disabled={updating}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-medium transition-colors whitespace-nowrap"
             >
-              {updating ? 'Resolving...' : '✓ Mark Resolved'}
+              {updating ? 'Resolving...' : 'Mark Resolved'}
             </button>
           )}
-          <button 
-            onClick={() => navigate('/incidents')}
-            className="bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-md font-medium transition-colors"
-          >
-            Back to List
-          </button>
         </div>
       </div>
 

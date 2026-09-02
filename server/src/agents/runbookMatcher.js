@@ -214,14 +214,15 @@ const runbookMatcher = async (state) => {
 
   // Ask the LLM to format the final solution into clean structured steps
   const prompt = `
-  You are formatting an incident resolution report.
+  You are an expert site reliability engineer. You need to write incident resolution steps that a junior engineer can easily understand.
 
   Root Cause: ${rootCause}
   Solution Source: ${solutionSource}
   Raw Solution Content:
   ${solution}
 
-  Format this into clear, actionable resolution steps.
+  Format this into clear, extremely human-readable, numbered resolution steps. 
+  Avoid overly dense technical jargon where possible, or briefly explain it. 
   isNovelIncident should be true if the source was "Web Search" or "AI Knowledge"
   (meaning the company has no runbook for this yet).
 

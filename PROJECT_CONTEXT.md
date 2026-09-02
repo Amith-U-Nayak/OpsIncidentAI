@@ -1,6 +1,6 @@
 # OpsIncidentAI — Project Context File
 # Agent reads this at the start of every session to get up to speed instantly.
-# Last updated: After Module 3 completion (AI Agent Pipeline fully working + tested)
+# Last updated: After Full Stack Cloud Deployment & Vercel UI Overhaul (Module 11+)
 
 ---
 
@@ -25,6 +25,14 @@
 - Agent's run_command tool uses PowerShell — use semicolons (;) not && between commands
 - For creating multiple folders in PowerShell: New-Item -ItemType Directory -Force -Path "a","b","c"
 - npm installs always need --legacy-peer-deps due to LangChain version conflicts
+
+---
+
+## 🚀 Current State (Where we are right now)
+- **Backend:** 100% complete. Features JWT Auth, MongoDB Atlas, Cloudinary file uploads, and a 4-agent LangGraph AI orchestration pipeline using Groq.
+- **Frontend:** 100% complete. Built with React/Vite and Tailwind. Just received a massive "Vercel-style" true-black UI overhaul.
+- **DevOps:** 100% complete. Dockerized the backend. Tested with Jest. Deployed backend to Render and frontend to Vercel. 
+- **Next Up:** Adding Role-Based Access Control (RBAC) and Fintech Cost-Impact Analytics to the Dashboard.
 
 ---
 
@@ -304,3 +312,9 @@ Q7 ✅ How did you approach Automated Testing for the backend?
 
 Q8 ✅ Why did you use Docker, and how does it fit into your deployment lifecycle?
 → Answer: "I used Docker to solve the 'it works on my machine' problem. By containerizing the Node.js backend, I guarantee that the environment (Node version, OS dependencies) is identical on my Windows laptop, my coworker's Mac, and the final cloud server. My workflow relies on GitHub as the bridge: developers push code and the `Dockerfile` to GitHub. Then, a CI/CD pipeline reads that `Dockerfile`, bakes the final immutable container image, and deploys it to a cloud provider like Render or AWS. This entirely separates the act of 'running' code from 'hosting' code."
+
+Q9 ✅ Why deploy the frontend to Vercel and the backend to Render (Docker)?
+→ Answer: "This is the standard modern decoupled architecture. Vercel is a Global Edge CDN, which is perfect for static React/Vite assets because it caches the HTML/JS files in data centers physically close to the user, resulting in instant load times. Render is perfect for the backend because it natively supports Docker containers, allowing me to run my complex Node.js + LangGraph pipeline in an isolated, guaranteed environment. Separating them allows them to scale independently based on their unique bottlenecks."
+
+Q10 ✅ What is CORS, and how did you handle it during deployment?
+→ Answer: "CORS (Cross-Origin Resource Sharing) is a browser security feature that prevents a malicious website from making unauthorized API requests to your backend. During deployment, my backend was hosted on Render and my frontend on Vercel. I had to explicitly configure the CORS middleware in my Node.js Express server to only accept requests originating from my specific Vercel URL via an Environment Variable. If I didn't do this, the browser would have blocked all login attempts in production."

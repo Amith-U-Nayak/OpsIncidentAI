@@ -46,7 +46,9 @@ const postMortemGenerator = async (state) => {
 
   const prompt = `
   You are a senior SRE writing an official incident post-mortem report.
-  This report will be read by both engineers AND management.
+  This report will be read by both engineers AND non-technical management.
+  Write in a very clear, professional, and human-readable style. 
+  Avoid dense technical jargon when explaining the business impact.
 
   INCIDENT INFORMATION:
   - Severity: ${severity}
@@ -60,18 +62,13 @@ const postMortemGenerator = async (state) => {
   RECOMMENDED RESOLUTION:
   ${runbookSolution}
 
-  INSTRUCTIONS:
-  1. Write a summary in plain English (no jargon) for a non-technical manager (2-3 sentences).
-  2. State the root cause clearly for the engineering team.
-  3. List the resolution steps concisely.
-  4. Provide 3-5 specific action items to PREVENT this from happening again.
-
-  Respond ONLY with valid JSON in this exact format (no extra text, no markdown):
+  Generate the post-mortem based ONLY on this context. 
+  Respond ONLY with valid JSON in this exact format (no extra text, no markdown block):
   {
-    "summary": "plain english summary here",
-    "rootCause": "technical root cause here",
-    "resolution": "step by step resolution here",
-    "actionItems": ["action 1", "action 2", "action 3"]
+    "summary": "1-2 paragraphs summarizing the impact and timeline in simple human terms",
+    "rootCause": "Clear explanation of the technical failure, written so a manager can understand it",
+    "resolution": "Step-by-step resolution steps taken (or proposed)",
+    "actionItems": ["List of 3 actionable steps to prevent this forever"]
   }
   `;
 
