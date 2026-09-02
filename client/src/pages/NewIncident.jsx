@@ -82,11 +82,11 @@ const NewIncident = () => {
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Report New Incident</h1>
-        <p className="text-slate-400 text-sm">Upload logs and let AI analyze the root cause</p>
+        <p className="text-zinc-400 text-sm">Upload logs and let AI analyze the root cause</p>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-lg">
+        <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-md">
           {error}
         </div>
       )}
@@ -97,14 +97,14 @@ const NewIncident = () => {
           <AgentStepper events={agentEvents} />
           
           {pipelineComplete && (
-            <div className="bg-green-500/10 border border-green-500/30 p-6 rounded-xl flex items-center justify-between">
+            <div className="bg-green-500/10 border border-green-500/30 p-6 rounded-md flex items-center justify-between">
               <div>
                 <h3 className="text-green-400 font-bold text-lg">Analysis Complete!</h3>
                 <p className="text-green-500/80 text-sm mt-1">The AI has generated a post-mortem and runbook solution.</p>
               </div>
               <button
                 onClick={() => navigate(`/incidents/${incidentId}`)}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-medium transition-colors"
               >
                 View Full Report →
               </button>
@@ -112,38 +112,38 @@ const NewIncident = () => {
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="bg-slate-800 rounded-xl p-8 border border-slate-700 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-zinc-950 rounded-md p-8 border border-zinc-800 space-y-6">
           <div>
-            <label className="text-slate-400 text-sm mb-1 block font-medium">Incident Title</label>
+            <label className="text-zinc-400 text-sm mb-1 block font-medium">Incident Title</label>
             <input
               type="text"
               required
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
               placeholder="e.g., Database Connection Timeout in Production"
             />
           </div>
 
           <div>
-            <label className="text-slate-400 text-sm mb-1 block font-medium">Description</label>
+            <label className="text-zinc-400 text-sm mb-1 block font-medium">Description</label>
             <textarea
               required
               rows="4"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
               placeholder="Describe what happened, when it started, and user impact..."
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="text-slate-400 text-sm mb-1 block font-medium">Severity</label>
+              <label className="text-zinc-400 text-sm mb-1 block font-medium">Severity</label>
               <select
                 value={form.severity}
                 onChange={(e) => setForm({ ...form, severity: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
               >
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
@@ -153,27 +153,27 @@ const NewIncident = () => {
             </div>
 
             <div>
-              <label className="text-slate-400 text-sm mb-1 block font-medium">Attach Log File</label>
+              <label className="text-zinc-400 text-sm mb-1 block font-medium">Attach Log File</label>
               <input
                 type="file"
                 onChange={(e) => setFile(e.target.files[0])}
-                className="w-full bg-slate-900 border border-slate-600 text-slate-400 rounded-lg px-4 py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500/10 file:text-indigo-400 hover:file:bg-indigo-500/20 cursor-pointer"
+                className="w-full bg-black border border-zinc-800 text-zinc-400 rounded-md px-4 py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-500/10 file:text-zinc-300 hover:file:bg-indigo-500/20 cursor-pointer"
               />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-700 flex justify-end">
+          <div className="pt-4 border-t border-zinc-800 flex justify-end">
             <button
               type="button"
               onClick={() => navigate('/incidents')}
-              className="px-6 py-3 text-slate-400 hover:text-white font-medium mr-4"
+              className="px-6 py-3 text-zinc-400 hover:text-white font-medium mr-4"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-700 disabled:text-slate-500 text-white px-8 py-3 rounded-lg font-medium transition-colors shadow-lg flex items-center gap-2"
+              className="bg-white text-black hover:bg-zinc-200 disabled:bg-zinc-900 disabled:text-zinc-500 text-white px-8 py-3 rounded-md font-medium transition-colors shadow-lg flex items-center gap-2"
             >
               {loading ? (
                 <>

@@ -10,10 +10,10 @@ const SEVERITY_COLORS = {
 };
 
 const STATUS_COLORS = {
-  Open: 'bg-slate-700 text-slate-300',
-  Investigating: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+  Open: 'bg-zinc-900 text-slate-300',
+  Investigating: 'bg-indigo-500/10 text-zinc-300 border-white/20',
   Resolved: 'bg-green-500/10 text-green-400 border-green-500/20',
-  Closed: 'bg-slate-800 text-slate-500',
+  Closed: 'bg-zinc-950 text-zinc-500',
 };
 
 const Incidents = () => {
@@ -39,7 +39,7 @@ const Incidents = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-indigo-400 animate-pulse text-lg">Loading Incidents...</div>
+        <div className="text-zinc-300 animate-pulse text-lg">Loading Incidents...</div>
       </div>
     );
   }
@@ -49,28 +49,28 @@ const Incidents = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-white">Incidents</h1>
-          <p className="text-slate-400 text-sm">Manage and track system issues</p>
+          <p className="text-zinc-400 text-sm">Manage and track system issues</p>
         </div>
         <Link 
           to="/incidents/new" 
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-lg shadow-indigo-500/20"
+          className="bg-white text-black hover:bg-zinc-200 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-lg shadow-indigo-500/20"
         >
           ➕ New Incident
         </Link>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-lg mb-6">
+        <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-md mb-6">
           {error}
         </div>
       )}
 
       {/* HCI Principle: Data Tables should be easy to scan. Use badges and zebra striping or hover states. */}
-      <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+      <div className="bg-zinc-950 rounded-md border border-zinc-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-900/50 border-b border-slate-700 text-slate-400 text-sm">
+              <tr className="bg-black/50 border-b border-zinc-800 text-zinc-400 text-sm">
                 <th className="p-4 font-medium">Title</th>
                 <th className="p-4 font-medium">Status</th>
                 <th className="p-4 font-medium">Severity</th>
@@ -81,7 +81,7 @@ const Incidents = () => {
             <tbody className="divide-y divide-slate-700">
               {incidents.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-slate-500">
+                  <td colSpan="5" className="p-8 text-center text-zinc-500">
                     No incidents found. You're all clear! 🎉
                   </td>
                 </tr>
@@ -89,13 +89,13 @@ const Incidents = () => {
                 incidents.map((incident) => (
                   <tr 
                     key={incident._id} 
-                    className="hover:bg-slate-700/50 transition-colors cursor-pointer group"
+                    className="hover:bg-zinc-900/50 transition-colors cursor-pointer group"
                     onClick={() => navigate(`/incidents/${incident._id}`)}
                   >
                     <td className="p-4 text-white font-medium">
                       {incident.title}
                       {/* Truncate long descriptions to prevent UI breaking */}
-                      <p className="text-slate-400 text-xs mt-1 truncate max-w-md font-normal">
+                      <p className="text-zinc-400 text-xs mt-1 truncate max-w-md font-normal">
                         {incident.description}
                       </p>
                     </td>
@@ -109,11 +109,11 @@ const Incidents = () => {
                         {incident.severity}
                       </span>
                     </td>
-                    <td className="p-4 text-slate-400 text-sm">
+                    <td className="p-4 text-zinc-400 text-sm">
                       {new Date(incident.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-right">
-                      <span className="text-indigo-400 group-hover:text-indigo-300 font-medium text-sm transition-colors">
+                      <span className="text-zinc-300 group-hover:text-indigo-300 font-medium text-sm transition-colors">
                         View Details →
                       </span>
                     </td>

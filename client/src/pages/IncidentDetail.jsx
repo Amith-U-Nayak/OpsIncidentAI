@@ -50,7 +50,7 @@ const IncidentDetail = () => {
   };
 
   if (loading) {
-    return <div className="text-indigo-400 animate-pulse text-center mt-20">Loading Incident Data...</div>;
+    return <div className="text-zinc-300 animate-pulse text-center mt-20">Loading Incident Data...</div>;
   }
 
   if (error || !incident) {
@@ -64,11 +64,11 @@ const IncidentDetail = () => {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-3xl font-bold text-white">{incident.title}</h1>
-            <span className="px-3 py-1 rounded-full text-xs font-bold border border-slate-600 bg-slate-800 text-slate-300">
+            <span className="px-3 py-1 rounded-full text-xs font-bold border border-zinc-800 bg-zinc-950 text-slate-300">
               {incident.status}
             </span>
           </div>
-          <p className="text-slate-400">Reported on {new Date(incident.createdAt).toLocaleString()}</p>
+          <p className="text-zinc-400">Reported on {new Date(incident.createdAt).toLocaleString()}</p>
         </div>
         
         <div className="flex gap-3">
@@ -76,14 +76,14 @@ const IncidentDetail = () => {
             <button 
               onClick={handleResolve}
               disabled={updating}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
             >
               {updating ? 'Resolving...' : '✓ Mark Resolved'}
             </button>
           )}
           <button 
             onClick={() => navigate('/incidents')}
-            className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-md font-medium transition-colors"
           >
             Back to List
           </button>
@@ -91,15 +91,15 @@ const IncidentDetail = () => {
       </div>
 
       {/* Tabs - HCI Principle: Chunking */}
-      <div className="flex border-b border-slate-700 mb-6 overflow-x-auto">
+      <div className="flex border-b border-zinc-800 mb-6 overflow-x-auto">
         {TABS.map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
               activeTab === tab 
-                ? 'border-indigo-500 text-indigo-400' 
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                ? 'border-white text-zinc-300' 
+                : 'border-transparent text-zinc-400 hover:text-slate-200 hover:border-zinc-800'
             }`}
           >
             {tab}
@@ -108,22 +108,22 @@ const IncidentDetail = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 min-h-[400px]">
+      <div className="bg-zinc-950 rounded-md p-6 border border-zinc-800 min-h-[400px]">
         {activeTab === 'Overview' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-slate-400 text-sm font-medium mb-2">Description</h3>
-              <p className="text-white bg-slate-900 p-4 rounded-lg whitespace-pre-wrap">
+              <h3 className="text-zinc-400 text-sm font-medium mb-2">Description</h3>
+              <p className="text-white bg-black p-4 rounded-md whitespace-pre-wrap">
                 {incident.description}
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-slate-900 p-4 rounded-lg">
-                <p className="text-slate-500 text-xs uppercase font-bold">Severity</p>
+              <div className="bg-black p-4 rounded-md">
+                <p className="text-zinc-500 text-xs uppercase font-bold">Severity</p>
                 <p className="text-white font-medium mt-1">{incident.severity}</p>
               </div>
-              <div className="bg-slate-900 p-4 rounded-lg">
-                <p className="text-slate-500 text-xs uppercase font-bold">Status</p>
+              <div className="bg-black p-4 rounded-md">
+                <p className="text-zinc-500 text-xs uppercase font-bold">Status</p>
                 <p className="text-white font-medium mt-1">{incident.status}</p>
               </div>
             </div>
@@ -132,45 +132,45 @@ const IncidentDetail = () => {
 
         {activeTab === 'Logs & Errors' && (
           <div>
-            <h3 className="text-slate-400 text-sm font-medium mb-2">Attached Log Files</h3>
+            <h3 className="text-zinc-400 text-sm font-medium mb-2">Attached Log Files</h3>
             {incident.logs && incident.logs.length > 0 ? (
               <ul className="space-y-2">
                 {incident.logs.map((log, i) => (
                   <li key={i}>
-                    <a href={log} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline flex items-center gap-2 bg-slate-900 p-3 rounded-lg">
+                    <a href={log} target="_blank" rel="noreferrer" className="text-zinc-300 hover:underline flex items-center gap-2 bg-black p-3 rounded-md">
                       📄 View Log File {i + 1} ↗
                     </a>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-slate-500 italic">No logs attached to this incident.</p>
+              <p className="text-zinc-500 italic">No logs attached to this incident.</p>
             )}
           </div>
         )}
 
         {activeTab === 'Root Cause' && (
           <div>
-            <h3 className="text-slate-400 text-sm font-medium mb-2">AI Generated Root Cause</h3>
+            <h3 className="text-zinc-400 text-sm font-medium mb-2">AI Generated Root Cause</h3>
             {incident.aiRootCause ? (
-              <div className="bg-slate-900 p-6 rounded-lg border-l-4 border-indigo-500">
+              <div className="bg-black p-6 rounded-md border-l-4 border-white">
                 <p className="text-white leading-relaxed">{incident.aiRootCause}</p>
               </div>
             ) : (
-              <p className="text-slate-500 italic">AI has not analyzed this incident yet.</p>
+              <p className="text-zinc-500 italic">AI has not analyzed this incident yet.</p>
             )}
           </div>
         )}
 
         {activeTab === 'Runbook Solution' && (
           <div>
-            <h3 className="text-slate-400 text-sm font-medium mb-2">Suggested Resolution</h3>
+            <h3 className="text-zinc-400 text-sm font-medium mb-2">Suggested Resolution</h3>
             {postMortem ? (
-              <div className="bg-slate-900 p-6 rounded-lg text-white whitespace-pre-wrap">
+              <div className="bg-black p-6 rounded-md text-white whitespace-pre-wrap">
                 {postMortem.resolution}
               </div>
             ) : (
-              <p className="text-slate-500 italic">No runbook solution available.</p>
+              <p className="text-zinc-500 italic">No runbook solution available.</p>
             )}
           </div>
         )}
@@ -189,15 +189,15 @@ const IncidentDetail = () => {
             {postMortem ? (
               <div className="bg-black p-6 rounded-md space-y-6 border border-zinc-800">
                 <div>
-                  <h4 className="text-indigo-400 font-bold mb-2">Executive Summary</h4>
+                  <h4 className="text-zinc-300 font-bold mb-2">Executive Summary</h4>
                   <p className="text-white leading-relaxed">{postMortem.summary}</p>
                 </div>
                 <div>
-                  <h4 className="text-indigo-400 font-bold mb-2">Root Cause Analysis</h4>
+                  <h4 className="text-zinc-300 font-bold mb-2">Root Cause Analysis</h4>
                   <p className="text-white leading-relaxed">{postMortem.rootCause}</p>
                 </div>
                 <div>
-                  <h4 className="text-indigo-400 font-bold mb-2">Action Items (Preventative)</h4>
+                  <h4 className="text-zinc-300 font-bold mb-2">Action Items (Preventative)</h4>
                   <ul className="list-disc list-inside text-white space-y-1">
                     {postMortem.actionItems.map((item, idx) => (
                       <li key={idx}>{item}</li>
@@ -206,7 +206,7 @@ const IncidentDetail = () => {
                 </div>
               </div>
             ) : (
-              <p className="text-slate-500 italic">No post-mortem report available yet.</p>
+              <p className="text-zinc-500 italic">No post-mortem report available yet.</p>
             )}
           </div>
         )}

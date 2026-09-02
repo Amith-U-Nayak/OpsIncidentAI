@@ -17,7 +17,7 @@ const AgentStepper = ({ events }) => {
   });
 
   return (
-    <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
+    <div className="bg-zinc-950 rounded-md p-6 border border-zinc-800">
       <h3 className="text-white font-semibold mb-6 flex items-center gap-2">
         🤖 AI Pipeline Progress
       </h3>
@@ -34,10 +34,10 @@ const AgentStepper = ({ events }) => {
                 status === 'done'
                   ? 'bg-green-500/20 border-green-500 text-green-400'
                   : status === 'started'
-                  ? 'bg-indigo-500/20 border-indigo-500 text-indigo-400 animate-pulse'
+                  ? 'bg-indigo-500/20 border-white text-zinc-300 animate-pulse'
                   : status === 'error'
                   ? 'bg-red-500/20 border-red-500 text-red-400'
-                  : 'bg-slate-700 border-slate-600 text-slate-500'
+                  : 'bg-zinc-900 border-zinc-800 text-zinc-500'
               }`}>
                 {status === 'done' ? '✓' : status === 'error' ? '✗' : agent.icon}
               </div>
@@ -47,7 +47,7 @@ const AgentStepper = ({ events }) => {
                 <div className="flex items-center gap-2">
                   <span className="text-white font-medium text-sm">{agent.label}</span>
                   {status === 'started' && (
-                    <span className="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full animate-pulse">
+                    <span className="text-xs bg-indigo-500/20 text-zinc-300 px-2 py-0.5 rounded-full animate-pulse">
                       Running...
                     </span>
                   )}
@@ -58,13 +58,13 @@ const AgentStepper = ({ events }) => {
                   )}
                 </div>
                 {event?.message && (
-                  <p className="text-slate-400 text-xs mt-1">{event.message}</p>
+                  <p className="text-zinc-400 text-xs mt-1">{event.message}</p>
                 )}
                 {/* Show extra data if available */}
                 {status === 'done' && event?.data && Object.keys(event.data).length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {Object.entries(event.data).map(([key, val]) => (
-                      <span key={key} className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">
+                      <span key={key} className="text-xs bg-zinc-900 text-slate-300 px-2 py-1 rounded">
                         {key}: <span className="text-white font-medium">{String(val)}</span>
                       </span>
                     ))}
