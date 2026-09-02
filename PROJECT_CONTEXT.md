@@ -318,3 +318,12 @@ Q9 ✅ Why deploy the frontend to Vercel and the backend to Render (Docker)?
 
 Q10 ✅ What is CORS, and how did you handle it during deployment?
 → Answer: "CORS (Cross-Origin Resource Sharing) is a browser security feature that prevents a malicious website from making unauthorized API requests to your backend. During deployment, my backend was hosted on Render and my frontend on Vercel. I had to explicitly configure the CORS middleware in my Node.js Express server to only accept requests originating from my specific Vercel URL via an Environment Variable. If I didn't do this, the browser would have blocked all login attempts in production."
+
+Q11 🧠 How did you handle User Authentication and Security?
+-> Answer: "I implemented a highly secure Role-Based Access Control (RBAC) system using JWTs and Express middleware. I completely locked down the registration API so attackers cannot escalate their privileges via Postman (e.g. Mass Assignment vulnerability). In the frontend, I used contextual UI rendering so 'Viewers' (like Stakeholders) cannot even see the buttons to edit or resolve incidents, while 'Admins' have exclusive access to a Team Directory and Delete capabilities."
+
+Q12 🧠 Explain your Multi-Tenant SaaS Architecture.
+-> Answer: "I designed the system to support multiple companies (organizations) sharing the same infrastructure, similar to Datadog or Slack. I modified the database schemas to tag every incident with an Organization ID. The backend controllers dynamically scope MongoDB queries based on the user's JWT payload. If a Viewer from 'VIT' logs in, the API intercepts the request and injects `{ organization: 'VIT' }` into the MongoDB aggregation pipeline. This ensures strict data privacy while maintaining a single global codebase."
+
+Q13 🧠 How did you handle Data Analytics and Reporting?
+-> Answer: "I built an end-to-end ETL (Extract, Transform, Load) pipeline for business stakeholders. Instead of just showing a static dashboard, I created a backend Node.js stream that Extracts live NoSQL data from MongoDB (using Multi-Tenant RBAC scoping), Transforms it on the fly by calculating complex metrics like 'Downtime Minutes' and 'Estimated Financial Impact', and Loads it into a dynamic CSV file format for users to download. I also implemented advanced slicing for Admins, allowing them to download global data, organization-specific data, or solo-engineer data."

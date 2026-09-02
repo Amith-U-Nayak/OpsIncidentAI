@@ -7,6 +7,7 @@ const {
   getWeeklyTrend,
   getMTTR,
   getStatusBreakdown,
+  exportCsv,
 } = require('../controllers/analytics.controller');
 
 const { protect } = require('../middleware/auth.middleware');
@@ -28,5 +29,7 @@ router.get('/mttr', getMTTR);
 
 // Status breakdown
 router.get('/status', getStatusBreakdown);
+
+router.get('/export', exportCsv);
 
 module.exports = router;

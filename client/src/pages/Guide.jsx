@@ -67,6 +67,21 @@ const Guide = () => {
             After the AI finishes, click on the Incident in your Dashboard. Navigate to the <strong>Post-Mortem</strong> tab to read the AI-generated resolution, and see whether it sourced the fix from historical runbooks or live web knowledge.
           </p>
         </div>
+        {/* Step 4: Multi-Tenant Architecture */}
+        <div className="bg-black border border-zinc-800 rounded-md p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white text-black font-bold">4</div>
+            <h2 className="text-xl font-semibold text-white">Test the Multi-Tenant RBAC</h2>
+          </div>
+          <p className="text-zinc-400 mb-4 ml-12">
+            This platform acts as a multi-tenant SaaS (like Slack or Datadog). Your data visibility changes based on your Role and Organization.
+          </p>
+          <ul className="list-disc list-inside text-zinc-400 ml-12 space-y-2 mb-4">
+            <li><strong className="text-zinc-200">Admin:</strong> Full access. Can see the massive "Fintech Cost Impact" dashboard widget, delete incidents, and search the global incident database.</li>
+            <li><strong className="text-zinc-200">Engineer:</strong> Can create and resolve incidents. If an Engineer belongs to "Company X", they share a dashboard with everyone in Company X.</li>
+            <li><strong className="text-zinc-200">Viewer (Stakeholder):</strong> Read-only access. The system hides creation/resolution buttons. They can only view data for their specific Organization.</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

@@ -63,9 +63,25 @@ const Dashboard = () => {
   // Fintech Calculation: Assume $1,500 lost per minute of downtime
   const calculateCostImpact = () => {
     if (!mttr?.mttrMinutes || !summary?.totalIncidents) return '$0';
-    // Just a fun metric for the portfolio: Total incidents * average minutes * cost per minute
     const totalCost = mttr.mttrMinutes * summary.totalIncidents * 1500;
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalCost);
+  };
+
+  const handleExport = async (type) => {
+    try {
+      const url = type ? `/analytics/export?type=${type}` : '/analytics/export';
+      const response = await api.get(url, { responseType: 'blob' });
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'opsincident_report.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      alert('Failed to export CSV');
+    }
   };
 
   if (loading) {
@@ -92,17 +108,44 @@ const Dashboard = () => {
           <p className="text-zinc-400 text-sm mt-1">Analytics and KPIs</p>
         </div>
         
-        {user?.role !== 'viewer' && (
-          <Link
-            to="/incidents/new"
-            className="bg-white text-black hover:bg-zinc-200 px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Report Incident
-          </Link>
-        )}
+        <div className="flex gap-3">
+          {/* Admin Export Dropdown */}
+          {user?.role === 'admin' ? (
+            <div className="relative group">
+              <button className="bg-zinc-800 text-white hover:bg-zinc-700 px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2 border border-zinc-700">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                Export CSV ⬇️
+              </button>
+              <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <button onClick={() => handleExport('all')} className="w-full text-left block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white">Global Data (All)</button>
+                <button onClick={() => handleExport('orgs')} className="w-full text-left block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white">Organizations Only</button>
+                <button onClick={() => handleExport('solo')} className="w-full text-left block px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white">Solo Engineers Only</button>
+              </div>
+            </div>
+          ) : (
+            /* Standard Export Button (Viewers & Engineers) */
+            <button 
+              onClick={() => handleExport()}
+              className="bg-zinc-800 text-white hover:bg-zinc-700 px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2 border border-zinc-700"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+              Export CSV
+            </button>
+          )}
+
+          {/* Report Incident (Hidden from Viewers) */}
+          {user?.role !== 'viewer' && (
+            <Link
+              to="/incidents/new"
+              className="bg-white text-black hover:bg-zinc-200 px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Report Incident
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Admin Only: Fintech Cost Impact */}
