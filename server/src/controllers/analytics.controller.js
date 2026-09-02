@@ -21,16 +21,24 @@ const PostMortem = require('../models/PostMortem.model');
 // Returns: totalIncidents, openCount, criticalCount, resolvedCount, investigatingCount
 // ==========================================
 exports.getSummary = async (req, res) => {
+
+  let filter = {};
+  if (req.user.role === 'viewer' || (req.user.role === 'engineer' && req.user.organization)) {
+    filter = { organization: req.user.organization };
+  } else if (req.user.role === 'engineer') {
+    filter = { createdBy: req.user.id };
+  }
+
   try {
     // Run 4 count queries in PARALLEL using Promise.all
     // Analogy: Instead of asking 4 questions one by one (slow),
     // ask all 4 at the same time and wait for all answers (fast)
     const [total, open, critical, resolved, investigating] = await Promise.all([
-      Incident.countDocuments(),
-      Incident.countDocuments({ status: 'Open' }),
-      Incident.countDocuments({ severity: 'Critical' }),
-      Incident.countDocuments({ status: 'Resolved' }),
-      Incident.countDocuments({ status: 'Investigating' }),
+      Incident.countDocuments(filter),
+      Incident.countDocuments({ ...filter,  status: 'Open' }),
+      Incident.countDocuments({ ...filter,  severity: 'Critical' }),
+      Incident.countDocuments({ ...filter,  status: 'Resolved' }),
+      Incident.countDocuments({ ...filter,  status: 'Investigating' }),
     ]);
 
     res.status(200).json({
@@ -54,13 +62,21 @@ exports.getSummary = async (req, res) => {
 // Returns: [{ severity: 'Critical', count: 5 }, { severity: 'High', count: 3 }, ...]
 // ==========================================
 exports.getSeverityDistribution = async (req, res) => {
+
+  let filter = {};
+  if (req.user.role === 'viewer' || (req.user.role === 'engineer' && req.user.organization)) {
+    filter = { organization: req.user.organization };
+  } else if (req.user.role === 'engineer') {
+    filter = { createdBy: req.user.id };
+  }
+
   try {
     // $group: GROUP all incidents by the 'severity' field
     // $sum: 1 means "count 1 for each incident in this group"
     // Result: [{ _id: 'Critical', count: 5 }, { _id: 'High', count: 3 }]
     const distribution = await Incident.aggregate([
-      {
-        $group: {
+{ $match: filter },
+{ $group: {
           _id: '$severity',  // Group by the severity field
           count: { $sum: 1 } // Count incidents in each group
         }
@@ -91,6 +107,14 @@ exports.getSeverityDistribution = async (req, res) => {
 // Returns incidents grouped by week for the last 8 weeks
 // ==========================================
 exports.getWeeklyTrend = async (req, res) => {
+
+  let filter = {};
+  if (req.user.role === 'viewer' || (req.user.role === 'engineer' && req.user.organization)) {
+    filter = { organization: req.user.organization };
+  } else if (req.user.role === 'engineer') {
+    filter = { createdBy: req.user.id };
+  }
+
   try {
     // Calculate the date 8 weeks ago from now
     const eightWeeksAgo = new Date();
@@ -151,6 +175,14 @@ exports.getWeeklyTrend = async (req, res) => {
 // Lower MTTR = your team is faster at fixing problems.
 // ==========================================
 exports.getMTTR = async (req, res) => {
+
+  let filter = {};
+  if (req.user.role === 'viewer' || (req.user.role === 'engineer' && req.user.organization)) {
+    filter = { organization: req.user.organization };
+  } else if (req.user.role === 'engineer') {
+    filter = { createdBy: req.user.id };
+  }
+
   try {
     const result = await Incident.aggregate([
       {
@@ -223,8 +255,8 @@ exports.getMTTR = async (req, res) => {
 exports.getStatusBreakdown = async (req, res) => {
   try {
     const breakdown = await Incident.aggregate([
-      {
-        $group: {
+{ $match: filter },
+{ $group: {
           _id: '$status',
           count: { $sum: 1 }
         }

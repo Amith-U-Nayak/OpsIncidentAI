@@ -11,35 +11,29 @@ exports.createIncident = async (req, res) => {
   try {
     const { title, description, severity } = req.body;
     
-    // Check if the user uploaded files. Multer attaches them to req.files
-    // We map through the files to get their Cloudinary URLs (file.path)
     const logs = req.files ? req.files.map(file => file.path) : [];
 
-    // Create the incident in the database
-    // req.user.id comes from our auth middleware (the person who is logged in)
     const newIncident = await Incident.create({
       title,
       description,
       severity,
       logs,
-      createdBy: req.user.id
+      createdBy: req.user.id,
+      organization: req.user.organization || null // Multi-tenant scoping
     });
 
-    // Trigger n8n Slack Webhook if Critical
     if (newIncident.severity === 'Critical') {
       sendWebhook(process.env.N8N_CRITICAL_WEBHOOK_URL, {
         event: 'incident_created',
         incidentId: newIncident._id,
         title: newIncident.title,
         severity: newIncident.severity,
+        reportedBy: req.user.name,
         url: `${process.env.CLIENT_URL}/incidents/${newIncident._id}`
       });
     }
 
-    res.status(201).json({
-      success: true,
-      data: newIncident
-    });
+    res.status(201).json({ success: true, data: newIncident });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -50,8 +44,27 @@ exports.createIncident = async (req, res) => {
 // ==========================================
 exports.getIncidents = async (req, res) => {
   try {
-    // Populate lets us fetch the user details (name, email) instead of just the ID
-    const incidents = await Incident.find().populate('createdBy', 'name email');
+    let filter = {};
+    
+    // Multi-tenant scoping logic
+    if (req.user.role === 'admin') {
+      // Admin sees everything
+      filter = {};
+    } else if (req.user.role === 'viewer') {
+      // Viewer sees ONLY their organization
+      filter = { organization: req.user.organization };
+    } else {
+      // Engineer sees their own incidents OR their organization's incidents
+      if (req.user.organization) {
+        filter = { organization: req.user.organization };
+      } else {
+        filter = { createdBy: req.user.id };
+      }
+    }
+
+    const incidents = await Incident.find(filter)
+      .populate('createdBy', 'name username email')
+      .sort({ createdAt: -1 });
     
     res.status(200).json({
       success: true,

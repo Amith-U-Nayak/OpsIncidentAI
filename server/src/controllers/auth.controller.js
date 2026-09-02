@@ -42,7 +42,7 @@ const register = async (req, res) => {
     // req.body contains the data sent from the frontend
     // When frontend sends: { name: "Amith", email: "amith@gmail.com", password: "123456", organization: "VIT" }
     // We extract those values here using destructuring
-    const { name, email, password, organization, role } = req.body;
+    const { name, username, email, password, organization, role } = req.body;
 
     // 🛡️ SECURITY PATCH: Prevent Privilege Escalation (Mass Assignment)
     // Never trust the client payload for critical fields like roles.
@@ -52,16 +52,20 @@ const register = async (req, res) => {
     // If they ask for 'admin', it will safely fall back to 'engineer'.
     if (role === 'viewer') {
       assignedRole = 'viewer';
+      // Viewer MUST have an organization
+      if (!organization) {
+        return res.status(400).json({ success: false, message: 'Organization is mandatory for Viewers' });
+      }
     }
 
     // ── STEP 1: Validate required fields ──────────────────────
     // Check if any required field is missing
     // If frontend forgot to send email, for example, stop here and tell them
-    if (!name || !email || !password) {
+    if (!name || !username || !email || !password) {
       return res.status(400).json({
         // status(400) = "Bad Request" - the client sent wrong/incomplete data
         success: false,
-        message: 'Please provide name, email, and password'
+        message: 'Please provide full name, username, email, and password'
       });
     }
 
@@ -85,10 +89,11 @@ const register = async (req, res) => {
     // The password gets automatically encrypted by our pre('save') hook in the model!
     const user = await User.create({
       name,
+      username,
       email,
-      password,    // Plain text here - gets encrypted before saving
+      password,
       organization,
-      role: assignedRole  // 🛡️ Safe assigned role
+      role: assignedRole
     });
 
     // ── STEP 4: Generate JWT token ─────────────────────────────
@@ -105,7 +110,7 @@ const register = async (req, res) => {
       token,  // Frontend stores this and sends it with every future request
       user: {
         id: user._id,
-        name: user.name,
+        name: user.name, username: user.username,
         email: user.email,
         organization: user.organization,
         role: user.role
@@ -183,7 +188,7 @@ const login = async (req, res) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
+        name: user.name, username: user.username,
         email: user.email,
         organization: user.organization,
         role: user.role
@@ -224,7 +229,7 @@ const getMe = async (req, res) => {
       success: true,
       user: {
         id: user._id,
-        name: user.name,
+        name: user.name, username: user.username,
         email: user.email,
         organization: user.organization,
         role: user.role,

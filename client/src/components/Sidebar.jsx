@@ -70,9 +70,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <div className="w-10 h-10 bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-white text-base font-bold">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <p className="text-white text-base font-medium leading-none">{user?.name}</p>
-              <p className="text-zinc-500 text-sm mt-1 capitalize">{user?.role}</p>
+            <div className="overflow-hidden">
+              <p className="text-white text-base font-medium leading-none truncate">{user?.name}</p>
+              <p className="text-zinc-500 text-sm mt-1 truncate">@{user?.username || 'user'} • <span className="capitalize">{user?.role}</span></p>
             </div>
           </div>
           <button

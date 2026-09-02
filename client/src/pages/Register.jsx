@@ -44,13 +44,24 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-zinc-400 text-sm mb-1 block">Full Name</label>
+              <label className="text-zinc-400 text-sm mb-1 block">Full Name (Legal)</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
-                placeholder="Enter your full name"
+                placeholder="John Doe"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-zinc-400 text-sm mb-1 block">Username</label>
+              <input
+                type="text"
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
+                placeholder="johndoe99"
                 required
               />
             </div>
@@ -61,7 +72,7 @@ const Register = () => {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
-                placeholder="Enter your email"
+                placeholder="you@example.com"
                 required
               />
             </div>
@@ -81,18 +92,21 @@ const Register = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-slate-200"
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
             <div>
-              <label className="text-zinc-400 text-sm mb-1 block">Organization (Optional)</label>
+              <label className="text-zinc-400 text-sm mb-1 block">
+                Organization {form.role === 'viewer' && <span className="text-red-400">*</span>}
+              </label>
               <input
                 type="text"
                 value={form.organization}
                 onChange={(e) => setForm({ ...form, organization: e.target.value })}
                 className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
-                placeholder="Add Organization or leave blank for personal use"
+                placeholder="Add Organization or leave blank"
+                required={form.role === 'viewer'}
               />
             </div>
             <div>

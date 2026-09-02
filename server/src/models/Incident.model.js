@@ -31,6 +31,11 @@ const incidentSchema = new mongoose.Schema(
       enum: ['Low', 'Medium', 'High', 'Critical'],
       default: 'Medium'
     },
+    // Multi-tenant organization scoping
+    organization: {
+      type: String,
+      default: null
+    },
     // The person who reported it
     createdBy: {
       type: mongoose.Schema.ObjectId, // This is a special MongoDB ID type
