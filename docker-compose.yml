@@ -4,21 +4,21 @@ services:
   backend:
     # Look in the server folder for the Dockerfile and build it
     build: ./server
-    
+
     # Name the container
     container_name: opsincidentai-backend
-    
+
     # Map the ports (Host:Container)
     ports:
       - "5000:5000"
-      
+
     # Securely inject the environment variables
     env_file:
       - ./server/.env
-    
+
     # (Optional) If we had a database container, we would ensure it starts first
     # depends_on:
     #   - mongo
-    
+
     # Automatically restart if the server crashes
     restart: unless-stopped

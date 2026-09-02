@@ -2,10 +2,10 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const navItems = [
-  { to: '/dashboard', icon: '📊', label: 'Dashboard' },
-  { to: '/incidents', icon: '🚨', label: 'Incidents' },
-  { to: '/incidents/new', icon: '➕', label: 'New Incident' },
-  { to: '/runbooks', icon: '📖', label: 'Runbooks' },
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/incidents', label: 'Incidents' },
+  { to: '/incidents/new', label: 'New Incident' },
+  { to: '/runbooks', label: 'Runbooks' },
 ];
 
 const Sidebar = () => {
@@ -18,11 +18,11 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 bg-slate-800 h-screen flex flex-col fixed left-0 top-0 border-r border-slate-700">
+    <div className="w-64 bg-black h-screen flex flex-col fixed left-0 top-0 border-r border-zinc-800">
       {/* Logo */}
-      <div className="p-6 border-b border-slate-700">
-        <h1 className="text-xl font-bold text-white">⚡ OpsIncidentAI</h1>
-        <p className="text-slate-400 text-xs mt-1">AI Incident Management</p>
+      <div className="p-6 border-b border-zinc-800">
+        <h1 className="text-xl font-bold text-white tracking-tight">OpsIncidentAI</h1>
+        <p className="text-zinc-500 text-xs mt-1 uppercase tracking-wider">AI Incident Management</p>
       </div>
 
       {/* Nav Links */}
@@ -31,36 +31,36 @@ const Sidebar = () => {
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.to === '/incidents'}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              `flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 isActive
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-400 hover:bg-slate-700 hover:text-white'
+                  ? 'bg-zinc-800 text-white shadow-sm'
+                  : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
               }`
             }
           >
-            <span>{item.icon}</span>
             {item.label}
           </NavLink>
         ))}
       </nav>
 
       {/* User info + Logout */}
-      <div className="p-4 border-t border-slate-700">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+      <div className="p-4 border-t border-zinc-800">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-zinc-800 border border-zinc-700 rounded-full flex items-center justify-center text-white text-sm font-bold">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-white text-sm font-medium">{user?.name}</p>
-            <p className="text-slate-400 text-xs capitalize">{user?.role}</p>
+            <p className="text-white text-sm font-medium leading-none">{user?.name}</p>
+            <p className="text-zinc-500 text-xs mt-1 capitalize">{user?.role}</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full text-left px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg text-sm transition-colors"
+          className="w-full text-center border border-zinc-800 px-4 py-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-md text-sm transition-colors"
         >
-          🚪 Logout
+          Logout
         </button>
       </div>
     </div>

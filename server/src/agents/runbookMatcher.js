@@ -255,6 +255,7 @@ const runbookMatcher = async (state) => {
   // Write the final result to the State for Agent 4
   return {
     runbookSolution: finalResult.solution,
+    solutionSource: finalResult.solutionSource || solutionSource,
   };
 };
 

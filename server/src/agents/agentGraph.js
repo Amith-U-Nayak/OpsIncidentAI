@@ -12,7 +12,8 @@ const GraphState = Annotation.Root({
   severity: Annotation(),        // Agent 1 writes: Low / Medium / High / Critical
   rootCause: Annotation(),       // Agent 2 writes: the single root cause sentence
   confidence: Annotation(),      // Agent 2 writes: confidence score 0-100
-  runbookSolution: Annotation(), // Agent 3 writes: the recommended fix steps
+  runbookSolution: Annotation(),
+  solutionSource: Annotation(), // Agent 3 writes: the recommended fix steps
   postMortemId: Annotation(),    // Agent 4 writes: MongoDB ID of the saved post-mortem
 });
 
