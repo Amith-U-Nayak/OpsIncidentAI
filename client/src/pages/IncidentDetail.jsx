@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 const TABS = ['Overview', 'Logs & Errors', 'Root Cause', 'Runbook Solution', 'Post-Mortem'];
 
 const IncidentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [incident, setIncident] = useState(null);
   const [postMortem, setPostMortem] = useState(null);
   const [activeTab, setActiveTab] = useState('Overview');
@@ -49,6 +51,16 @@ const IncidentDetail = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to permanently delete this incident?")) return;
+    try {
+      await api.delete(`/incidents/${id}`);
+      navigate('/incidents');
+    } catch (err) {
+      alert("Failed to delete incident. Ensure you have admin privileges.");
+    }
+  };
+
   if (loading) {
     return <div className="text-zinc-300 animate-pulse text-center mt-20">Loading Incident Data...</div>;
   }
@@ -83,7 +95,18 @@ const IncidentDetail = () => {
         </div>
         
         <div className="flex gap-3">
-          {incident.status !== 'Resolved' && incident.status !== 'Closed' && (
+          {/* Admin Only: Delete Button */}
+          {user?.role === 'admin' && (
+            <button 
+              onClick={handleDelete}
+              className="bg-red-900/50 hover:bg-red-800 text-red-300 px-4 py-2 rounded-md font-medium transition-colors border border-red-900/50"
+            >
+              Delete
+            </button>
+          )}
+
+          {/* Engineer & Admin: Mark Resolved */}
+          {user?.role !== 'viewer' && incident.status !== 'Resolved' && incident.status !== 'Closed' && (
             <button 
               onClick={handleResolve}
               disabled={updating}

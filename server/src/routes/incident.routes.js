@@ -11,7 +11,7 @@ const {
 } = require('../controllers/incident.controller');
 
 // Import our middlewares
-const { protect } = require('../middleware/auth.middleware');
+const { protect, authorize } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload.middleware');
 const authorizeApiKey = require('../middleware/apikey.middleware');
 
@@ -34,7 +34,7 @@ router.use(protect);
 // ---------------------------------------------------------
 router
   .route('/')
-  .post(upload.array('logs', 5), createIncident)
+  .post(authorize('admin', 'engineer'), upload.array('logs', 5), createIncident)
   .get(getIncidents);
 
 // ---------------------------------------------------------
@@ -44,7 +44,7 @@ router
 router
   .route('/:id')
   .get(getIncidentById)
-  .delete(deleteIncident);
+  .delete(authorize('admin'), deleteIncident);
 
 // ---------------------------------------------------------
 // Route:       /api/incidents/:id/status
@@ -52,7 +52,7 @@ router
 // ---------------------------------------------------------
 router
   .route('/:id/status')
-  .patch(updateStatus);
+  .patch(authorize('admin', 'engineer'), updateStatus);
 
 // [NEW] Fetch Post-Mortem
 router.get('/:id/postmortem', getPostMortem);
@@ -64,6 +64,6 @@ router.get('/:id/postmortem', getPostMortem);
 // ---------------------------------------------------------
 router
   .route('/:id/analyse')
-  .post(runAnalysis);
+  .post(authorize('admin', 'engineer'), runAnalysis);
 
 module.exports = router;

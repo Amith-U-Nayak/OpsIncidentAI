@@ -44,6 +44,16 @@ const register = async (req, res) => {
     // We extract those values here using destructuring
     const { name, email, password, organization, role } = req.body;
 
+    // 🛡️ SECURITY PATCH: Prevent Privilege Escalation (Mass Assignment)
+    // Never trust the client payload for critical fields like roles.
+    let assignedRole = 'engineer'; // Default to lowest operational role
+    
+    // If they explicitly asked to be a viewer, allow it. Otherwise, force engineer.
+    // If they ask for 'admin', it will safely fall back to 'engineer'.
+    if (role === 'viewer') {
+      assignedRole = 'viewer';
+    }
+
     // ── STEP 1: Validate required fields ──────────────────────
     // Check if any required field is missing
     // If frontend forgot to send email, for example, stop here and tell them
@@ -76,9 +86,9 @@ const register = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password,    // Plain text here - gets encrypted before saving (remember the hook!)
+      password,    // Plain text here - gets encrypted before saving
       organization,
-      role: role || 'engineer'  // If role not provided, default to 'engineer'
+      role: assignedRole  // 🛡️ Safe assigned role
     });
 
     // ── STEP 4: Generate JWT token ─────────────────────────────

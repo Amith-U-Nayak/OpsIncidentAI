@@ -103,8 +103,7 @@ const Register = () => {
                 className="w-full bg-black border border-zinc-800 text-white rounded-md px-4 py-3 focus:outline-none focus:border-white"
               >
                 <option value="engineer">Engineer</option>
-                <option value="admin">Admin</option>
-                <option value="viewer">Viewer</option>
+                <option value="viewer">Viewer (Read-Only)</option>
               </select>
             </div>
             <button

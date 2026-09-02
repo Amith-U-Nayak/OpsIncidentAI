@@ -43,7 +43,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
         {/* Nav Links */}
         <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
-          {navItems.map((item) => (
+          {navItems
+            .filter(item => !(item.to === '/incidents/new' && user?.role === 'viewer'))
+            .map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
