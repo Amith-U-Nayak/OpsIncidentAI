@@ -53,7 +53,7 @@ const Incidents = () => {
         </div>
         <Link 
           to="/incidents/new" 
-          className="bg-white text-black hover:bg-zinc-200 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-lg shadow-indigo-500/20"
+          className="bg-white text-black  px-4 py-2 rounded-md font-medium transition-colors shadow-lg shadow-indigo-500/20"
         >
           ➕ New Incident
         </Link>

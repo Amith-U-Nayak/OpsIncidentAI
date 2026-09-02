@@ -47,17 +47,28 @@ const Dashboard = () => {
     fetchAnalytics();
   }, []);
 
+  const formatMTTR = (minutes) => {
+    if (!minutes || minutes <= 0) return 'N/A';
+    if (minutes < 60) return `${minutes}m`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h < 24) return `${h}h ${m}m`;
+    const d = Math.floor(h / 24);
+    const remainingH = h % 24;
+    return `${d}d ${remainingH}h`;
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-zinc-300 animate-pulse text-lg">Loading Analytics...</div>
+      <div className="flex justify-center items-center h-full">
+        <div className="text-zinc-400 animate-pulse text-lg">Loading Analytics...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-md">
+      <div className="text-red-400 text-center mt-20 p-4 bg-zinc-950 border border-red-500/30 rounded-md">
         {error}
       </div>
     );
@@ -68,7 +79,7 @@ const Dashboard = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-white">System Overview</h1>
-          <p className="text-zinc-400 text-sm">Real-time incident analytics</p>
+          <p className="text-zinc-400 text-sm mt-1">Analytics and KPIs</p>
         </div>
         {/* HCI Principle: Primary Action is distinct and easily accessible */}
         <Link
@@ -79,10 +90,10 @@ const Dashboard = () => {
         </Link>
       </div>
 
-      {/* HCI Principle: Glanceability. Top KPI cards chunk the most vital info. */}
+      {/* KPI Cards - HCI Principle: Chunking & Hierarchy */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-zinc-950 p-5 rounded-md border border-zinc-800">
-          <p className="text-zinc-400 text-sm font-medium">Total Incidents</p>
+          <p className="text-zinc-400 text-sm font-medium">Total Incidents (30d)</p>
           <p className="text-3xl font-bold text-white mt-2">{summary?.totalIncidents}</p>
         </div>
         <div className="bg-zinc-950 p-5 rounded-md border border-zinc-800">
@@ -98,7 +109,7 @@ const Dashboard = () => {
         <div className="bg-zinc-950 p-5 rounded-md border border-zinc-800">
           <p className="text-zinc-400 text-sm font-medium">Mean Time To Resolve (MTTR)</p>
           <p className="text-3xl font-bold text-green-400 mt-2">
-            {mttr?.mttrMinutes > 0 ? `${mttr.mttrMinutes}m` : 'N/A'}
+            {formatMTTR(mttr?.mttrMinutes)}
           </p>
           <p className="text-zinc-500 text-xs mt-1">Industry target: &lt; 30m</p>
         </div>

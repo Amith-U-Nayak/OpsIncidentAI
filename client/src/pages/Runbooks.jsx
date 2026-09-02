@@ -113,7 +113,7 @@ const Runbooks = () => {
           <button
             type="submit"
             disabled={uploading}
-            className="w-full bg-white text-black hover:bg-zinc-200 disabled:opacity-50 text-white py-2.5 rounded-md font-medium transition-colors text-sm"
+            className="w-full bg-white text-black  py-2.5 rounded-md font-medium transition-colors text-sm"
           >
             {uploading ? 'Embedding and Saving...' : 'Upload & Train AI'}
           </button>

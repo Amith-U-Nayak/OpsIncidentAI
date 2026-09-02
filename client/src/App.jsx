@@ -14,9 +14,9 @@ import Runbooks from './pages/Runbooks';
 
 // Layout wrapper — adds the sidebar to all protected pages
 const AppLayout = ({ children }) => (
-  <div className="flex bg-slate-900 min-h-screen">
+  <div className="flex bg-black min-h-screen">
     <Sidebar />
-    <main className="flex-1 ml-64 p-8 overflow-auto">
+    <main className="flex-1 ml-64 p-8 overflow-auto border-l border-zinc-800">
       {children}
     </main>
   </div>

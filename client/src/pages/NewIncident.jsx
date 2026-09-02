@@ -173,7 +173,7 @@ const NewIncident = () => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-white text-black hover:bg-zinc-200 disabled:bg-zinc-900 disabled:text-zinc-500 text-white px-8 py-3 rounded-md font-medium transition-colors shadow-lg flex items-center gap-2"
+              className="bg-white text-black  px-8 py-3 rounded-md font-medium transition-colors shadow-lg flex items-center gap-2"
             >
               {loading ? (
                 <>
