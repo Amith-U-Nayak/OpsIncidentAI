@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 // HCI Principle: Color coding builds a mental model.
 // Critical = Red (Danger), High = Orange (Warning), Medium = Yellow, Low = Blue (Info)
@@ -13,6 +14,7 @@ const SEVERITY_COLORS = {
 };
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [summary, setSummary] = useState(null);
   const [severityData, setSeverityData] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
@@ -58,6 +60,14 @@ const Dashboard = () => {
     return `${d}d ${remainingH}h`;
   };
 
+  // Fintech Calculation: Assume $1,500 lost per minute of downtime
+  const calculateCostImpact = () => {
+    if (!mttr?.mttrMinutes || !summary?.totalIncidents) return '$0';
+    // Just a fun metric for the portfolio: Total incidents * average minutes * cost per minute
+    const totalCost = mttr.mttrMinutes * summary.totalIncidents * 1500;
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalCost);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -81,14 +91,35 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold text-white">System Overview</h1>
           <p className="text-zinc-400 text-sm mt-1">Analytics and KPIs</p>
         </div>
-        {/* HCI Principle: Primary Action is distinct and easily accessible */}
-        <Link
-          to="/incidents/new"
-          className="bg-white text-gray-900 hover:bg-zinc-200 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2 shadow-lg shadow-indigo-500/20"
-        >
-          <span>➕</span> Report Incident
-        </Link>
+        
+        {user?.role !== 'viewer' && (
+          <Link
+            to="/incidents/new"
+            className="bg-white text-black hover:bg-zinc-200 px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Report Incident
+          </Link>
+        )}
       </div>
+
+      {/* Admin Only: Fintech Cost Impact */}
+      {user?.role === 'admin' && (
+        <div className="bg-red-950/20 border border-red-900/50 p-6 rounded-md">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-red-400 font-semibold mb-1 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                Estimated Revenue Impact (30d)
+              </h2>
+              <p className="text-zinc-400 text-sm">Calculated at $1,500 downtime cost per minute (Fintech Standard)</p>
+            </div>
+            <p className="text-3xl font-bold text-red-500">{calculateCostImpact()}</p>
+          </div>
+        </div>
+      )}
 
       {/* KPI Cards - HCI Principle: Chunking & Hierarchy */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
