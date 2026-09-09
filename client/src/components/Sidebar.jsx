@@ -7,6 +7,7 @@ const navItems = [
   { to: '/incidents/new', label: 'New Incident' },
   { to: '/runbooks', label: 'Runbooks' },
   { to: '/guide', label: 'Documentation' },
+  { to: '/users', label: 'Team Directory', adminOnly: true },
 ];
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -44,7 +45,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         {/* Nav Links */}
         <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
           {navItems
-            .filter(item => !(item.to === '/incidents/new' && user?.role === 'viewer'))
+            .filter(item => {
+            if (item.to === '/incidents/new' && user?.role === 'viewer') return false;
+            if (item.adminOnly && user?.role !== 'admin') return false;
+            return true;
+          })
             .map((item) => (
             <NavLink
               key={item.to}

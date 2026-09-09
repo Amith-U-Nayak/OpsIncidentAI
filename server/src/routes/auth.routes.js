@@ -15,10 +15,10 @@ const express = require('express');
 const router = express.Router(); // Router is a mini Express app for grouping routes
 
 // Import controller functions
-const { register, login, getMe } = require('../controllers/auth.controller');
+const { register, login, getMe, getAllUsers } = require('../controllers/auth.controller');
 
 // Import middleware
-const { protect } = require('../middleware/auth.middleware');
+const { protect, authorize } = require('../middleware/auth.middleware');
 
 // ── PUBLIC ROUTES (no login required) ────────────────────────────
 // POST /api/auth/register
@@ -37,5 +37,7 @@ router.post('/login', login);
 // If token is valid → getMe controller runs and returns user info
 // If token is invalid → protect middleware sends 401 and stops here
 router.get('/me', protect, getMe);
+
+router.get('/users', protect, authorize('admin'), getAllUsers);
 
 module.exports = router;

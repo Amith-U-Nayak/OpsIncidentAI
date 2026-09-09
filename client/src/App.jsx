@@ -13,6 +13,7 @@ import NewIncident from './pages/NewIncident';
 import IncidentDetail from './pages/IncidentDetail';
 import Runbooks from './pages/Runbooks';
 import Guide from './pages/Guide';
+import Users from './pages/Users';
 
 // Layout wrapper
 const AppLayout = ({ children }) => {
@@ -85,6 +86,11 @@ function App() {
             <Route path="/guide" element={
               <ProtectedRoute>
                 <AppLayout><Guide /></AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/users" element={
+              <ProtectedRoute>
+                <AppLayout><Users /></AppLayout>
               </ProtectedRoute>
             } />
           </Routes>
