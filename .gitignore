@@ -43,3 +43,14 @@ Thumbs.db
 # ==========================================
 .vscode/
 .idea/
+
+# Internal Prep & Scratch Files
+INTERVIEW_PREP.md
+PROJECT_CONTEXT.md
+*.js
+!client/**/*.js
+!server/**/*.js
+!*.config.js
+update-*.js
+build-*.js
+fix-*.js
