@@ -105,11 +105,19 @@ exports.updateStatus = async (req, res) => {
   try {
     const { status, severity, aiRootCause } = req.body;
 
-    // new: true tells Mongoose to return the updated document, not the old one
-    // runValidators: true ensures the new status matches our enum ['Open', 'Resolved' etc]
+    const updateData = { status, severity, aiRootCause };
+
+    // Set a permanent resolvedAt timestamp when status changes to Resolved
+    // We use this instead of updatedAt for MTTR because updatedAt changes
+    // on every document update (e.g., adding organization field, AI analysis etc.)
+    // which would inflate the MTTR metric incorrectly.
+    if (status === 'Resolved') {
+      updateData.resolvedAt = new Date();
+    }
+
     const incident = await Incident.findByIdAndUpdate(
       req.params.id,
-      { status, severity, aiRootCause },
+      updateData,
       { new: true, runValidators: true }
     );
 

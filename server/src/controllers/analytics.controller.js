@@ -186,15 +186,15 @@ exports.getMTTR = async (req, res) => {
   try {
     const result = await Incident.aggregate([
       {
-        // Only count incidents that are actually resolved
-        $match: { status: 'Resolved' }
+        // Only count incidents that have a resolvedAt timestamp
+        $match: { status: 'Resolved', resolvedAt: { $exists: true, $ne: null } }
       },
       {
-        // Calculate resolution time for each incident
-        // $subtract between two dates gives the difference in MILLISECONDS
+        // Calculate resolution time using the dedicated resolvedAt field
+        // This is immune to updatedAt being touched by unrelated updates
         $project: {
           resolutionTimeMs: {
-            $subtract: ['$updatedAt', '$createdAt']
+            $subtract: ['$resolvedAt', '$createdAt']
           }
         }
       },

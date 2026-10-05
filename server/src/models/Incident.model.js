@@ -57,6 +57,12 @@ const incidentSchema = new mongoose.Schema(
     aiRootCause: {
       type: String,
       default: null
+    },
+    // Permanent timestamp set ONCE when incident is first marked Resolved.
+    // Used for MTTR calculation. Unlike updatedAt, this never changes after being set.
+    resolvedAt: {
+      type: Date,
+      default: null
     }
   },
   {
